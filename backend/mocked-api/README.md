@@ -19,10 +19,11 @@
 ```js
 // request...
 {
-	"credentials": {
+	"player": {
 		"nick": "hand",
 		"password": "spinner"
-	}
+	},
+	"expiration": 157 // segundos de validade pro token (não vai pra api final)
 }
 // response...
 {
@@ -38,7 +39,8 @@ Nota: O player acima já está cadastrado.
 {
 	"player": {
 		"nick": "feet",
-		"password": "spinner"
+		"password": "spinner",
+		"email": "hand@spinner.com"
 	}
 }
 // response...

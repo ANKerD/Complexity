@@ -9,18 +9,18 @@ const players = {
   },
 };
 
-const isAuthenticated = credentials  => {
-  console.log('credentials', credentials, players);
-  return `${credentials.nick}:${credentials.password}` in players;
+const isAuthenticated = player  => {
+  console.log('player', player, players);
+  return `${player.nick}:${player.password}` in players;
 }
 
 const login = (req, res) => {
-  if (!isAuthenticated(req.body.credentials)) {
+  if (!isAuthenticated(req.body.player)) {
     return res.status(401).json({
       message: 'Falha na autenticaçao'
     });
   }
-  const { nick } = req.body.credentials;
+  const { nick } = req.body.player;
   var token = jwt.sign({ data: { nick } }, 'itsa-secret-baby', {
     expiresIn: req.body.expiration || '1h'
   });
@@ -31,9 +31,6 @@ const login = (req, res) => {
 const signup = (req, res) => {
   const {nick, password} = req.body.player;
   players[`${nick}:${password}`] = req.body.player;
-  req.body = {
-    credentials: {nick, password}
-  }
   return login(req, res);
 };
 
