@@ -16,7 +16,7 @@
 
 #### ``` POST /player/login ```
 
-```json
+```js
 // request...
 {
 	"credentials": {
@@ -33,7 +33,7 @@
 Nota: O player acima já está cadastrado.
 #### ``` POST /player/signup ```
 
-```json
+```js
 // request...
 {
 	"player": {
