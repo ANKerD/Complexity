@@ -1,10 +1,22 @@
 # Mock API
 
+## Setup
+
+#### Pré-requisitos
+- Nodejs
+- Npm
+
+#### Rodando a aplicação
+1. ```npm install```
+2. ```npm run dev```
+
+## Docs
+
 ### Player
 
 #### ``` POST /player/login ```
 
-``` json
+```json
 // request...
 {
 	"credentials": {
@@ -21,7 +33,7 @@
 Nota: O player acima já está cadastrado.
 #### ``` POST /player/signup ```
 
-``` json
+```json
 // request...
 {
 	"player": {
