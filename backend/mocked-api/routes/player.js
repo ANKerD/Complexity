@@ -1,5 +1,5 @@
 const { Router } = require('express');
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const players = {
   'hand:spinner': {
