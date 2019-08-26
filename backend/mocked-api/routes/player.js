@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 const players = {
   'hand:spinner': {
@@ -21,7 +22,7 @@ const login = (req, res) => {
     });
   }
   const { nick } = req.body.player;
-  var token = jwt.sign({ data: { nick } }, 'itsa-secret-baby', {
+  const token = jwt.sign({ data: { nick } }, config.jwt_secret, {
     expiresIn: req.body.expiration || '1h'
   });
 
