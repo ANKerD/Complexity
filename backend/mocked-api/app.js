@@ -5,7 +5,7 @@ const util = require('util')
 
 const config = require('./config');
 
-const playerRoute = require('./routes/player');
+const playerRoute = require('./controllers/player_controller');
 const problemRoute = require('./routes/problem');
 const submissionsRoute = require('./routes/submission');
 
@@ -16,7 +16,7 @@ const username = 'complexity',
       password = 'complexity123',
       db_name = 'complexity',
       db_url = util.format('mongodb+srv://%s:%s@mycluster-7adlt.gcp.mongodb.net/%s?retryWrites=true&w=majority', username, password, db_name);
-      
+
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,

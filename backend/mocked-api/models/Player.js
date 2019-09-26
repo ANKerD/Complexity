@@ -4,8 +4,8 @@ const PlayerSchema = new Schema({
     email: {
         type: String,
         unique: true,
-        required: [true, "Email can't be blank"],
-        match: [/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/, 'is invalid']
+        required: [true, "Email can't be blank"]
+        // match: [/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/, 'is invalid']
     },
     nick: {
         type: String,
@@ -24,4 +24,4 @@ const PlayerSchema = new Schema({
     collection: "Players"
 });
 
-module.exports = model('Players', PlayerSchema )
+module.exports = model('Player', PlayerSchema )
