@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const util = require('util')
 
 const config = require('./config');
 
@@ -9,6 +11,25 @@ const submissionsRoute = require('./routes/submission');
 
 const app = express();
 const port = config.port;
+
+const username = 'complexity',
+      password = 'complexity123',
+      db_name = 'complexity',
+      db_url = util.format('mongodb+srv://%s:%s@mycluster-7adlt.gcp.mongodb.net/%s?retryWrites=true&w=majority', username, password, db_name);
+      
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  //disables mongoose's buffering mechanism
+  bufferCommands: false
+}
+
+try {
+  mongoose.connect(db_url, options);
+} catch (error) {
+  handleError(error);
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
