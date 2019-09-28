@@ -5,18 +5,21 @@ const config = require('../config');
 const httpStatusCode = require('../constants/http-status-code.json');
 
 const user_exists_msg = "User already exists";
+const user_not_found_msg = "User not found";
+const invalid_field_msg = "Please provide a valid username and password.";
+
 
 const signup = async (req, res) =>{
 	const { email, nick } = req.body.player;
 
-	p = await players.find({$or : [{email:email}, {nick:nick}]}).exec()
+	const p = await players.find({$or : [{email:email}, {nick:nick}]}).exec();
 	
 	if(p.length == 0){
 		players.create(req.body.player)
 			.then(({id}) => {
-				console.log("Id from player [" + req.body.player.nick + "]: " + id)
+				console.log("Id from player [" + req.body.player.nick + "]: " + id);
 				const token = jwt.sign({ id: id}, config.jwt_secret,{expiresIn: '1h'});
-				return res.send({token})
+				return res.send({token});
 			})
 			.catch(err => {
 				console.error(err);
@@ -27,11 +30,37 @@ const signup = async (req, res) =>{
 	}
 }
 
+const login = async (req, res) => {
+	const { email, nick, password } = req.body.player;
+	var player = undefined;
+	if(email && nick){
+		return res.status(400).send({error: "Send nick or email"});
+	}
+	
+	if(email){
+		player = await players.findOne({ email }).select('+password');
+	} else if (nick) {
+		player = await players.findOne({ nick }).select('+password');
+	}
+
+  if(!player)
+    return res.status(400).send({ error: user_not_found_msg});
+
+  if(player.password != password)
+    return res.status(400).send({ error: invalid_field_msg});
+
+  const token = jwt.sign({ id: player.id}, config.jwt_secret,
+    {expiresIn: '1h'}
+  );
+
+  return res.send({token});
+}
+
 const routes = () => {
     const router = Router();
 
     router.post('/signup', signup);
-    // router.post('/login', login);
+    router.post('/login', login);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
     return router;
