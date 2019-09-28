@@ -18,10 +18,41 @@ const PlayerSchema = new Schema({
         required: [true, "Password can't be blank"],
         select: false,
         match: [/^[a-zA-Z0-9]+$/, 'is invalid']
-    }
+    },
+    level: {type: Number, default: 0},
+    xp: {type: Number, default: 0},
+    coins: {type: Number, default: 0},
+    problemsSubmitted: {type: Array},
+    problemsSolved: {type: Array},
+    submissions: {type: Number, default: 0},
+    friends: {type: Array},
+    teams: {type: Array},
+    contests: {type: Array},
+    name: {type: String},
+    age: {type: Number},
+    nationality: {type: String},
+    institution: {type: String},
 }, {
     timestamps: true,
     collection: "Players"
 });
+
+PlayerSchema.methods.toProfile = function(){
+    return {
+      profile: {
+        name: this.name,
+        age: this.age,
+        nationality: this.nationality,
+        institution: this.institution,
+        nick: this.nick,
+        level: this.level,
+        problemsSubmitted: this.problemsSubmitted,
+        problemsSolved: this.problemsSolved,
+        submissions: this.submissions,
+        teams: this.teams,
+        contests: this.contests
+        }
+    };
+  };
 
 module.exports = model('Player', PlayerSchema )
