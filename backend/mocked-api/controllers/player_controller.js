@@ -66,11 +66,23 @@ const profile = async (req, res) => {
 	res.send(player.toProfile());
 }
 
+const myProfile = async (req, res) => {
+	// TODO: check if requester matches authentiated user
+	const nick = req.params.nick;
+	const player = await players.findOne({ nick });
+	
+	if(!player)
+		return res.status(400).send({ error: user_not_found_msg});
+	
+	res.send(player.toProfile());
+}
+
 const routes = () => {
     const router = Router();
 
     router.post('/signup', signup);
 		router.post('/login', login);
+		router.get('/:nick/me', myProfile);
 		router.get('/:nick', profile);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
