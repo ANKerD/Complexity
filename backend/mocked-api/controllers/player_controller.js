@@ -33,27 +33,26 @@ const signup = async (req, res) =>{
 const login = async (req, res) => {
 	const { email, nick, password } = req.body.player;
 	var player = undefined;
+	
 	if(email && nick){
+		console.log("Send nick or email");
 		return res.status(400).send({error: "Send nick or email"});
 	}
 	
-	if(email){
-		player = await Player.findOne({ email }).select('+password');
-	} else if (nick) {
-		player = await Player.findOne({ nick }).select('+password');
-	}
+	try {
+		if(email){
+			player = await Player.findByEmailAndPassword(email, password);
+		} else if (nick) {
+			player = await Player.findByNickAndPassword(nick, password);
+		}
 
-  if(!player)
-    return res.status(400).send({ error: user_not_found_msg});
-
-  if(player.password != password)
-    return res.status(400).send({ error: invalid_field_msg});
-
-  const token = jwt.sign({ id: player.id}, config.jwt_secret,
-    {expiresIn: '1h'}
-  );
-
-  return res.send({token});
+		if(!player)
+			return res.status(400).send({ error: user_not_found_msg});
+		const token = await player.generateAuthToken();
+		return res.send({token});
+	} catch (error) {
+        res.status(400).send({error})
+    }
 }
 
 const profile = async (req, res) => {

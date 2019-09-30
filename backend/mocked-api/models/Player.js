@@ -60,9 +60,24 @@ PlayerSchema.methods.generateAuthToken = async function() {
     return token;
 }
 
-PlayerSchema.statics.findByCredentials = async (email, password) => {
+PlayerSchema.statics.findByEmailAndPassword = async (email, password) => {
     // Search for a player by email and password.
-    const player = await Player.findOne({ email } );
+    const player = await Player.findOne({ email } ).select('+password');
+    console.log(player);
+    if (!player) {
+        throw new Error({ error: 'Invalid login credentials' });
+    }
+    const isPasswordMatch = password == player.password;
+    if (!isPasswordMatch) {
+        throw new Error({ error: 'Invalid login credentials' });
+    }
+    return player;
+}
+
+PlayerSchema.statics.findByNickAndPassword = async (nick, password) => {
+    // Search for a player by nick and password.
+    const player = await Player.findOne({ nick } ).select('+password');
+    console.log(player);
     if (!player) {
         throw new Error({ error: 'Invalid login credentials' });
     }
