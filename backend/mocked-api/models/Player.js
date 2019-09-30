@@ -49,6 +49,15 @@ const PlayerSchema = new Schema({
     collection: "Players"
 });
 
+PlayerSchema.methods.generateAuthToken = async function() {
+    // Generate an auth token for the player
+    const player = this;
+    const token = jwt.sign({_id: player._id}, process.env.JWT_KEY);
+    player.tokens = player.tokens.concat({token});
+    await player.save();
+    return token;
+}
+
 PlayerSchema.methods.toProfile = function(){
     return {
       profile: {
