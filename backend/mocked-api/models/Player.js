@@ -25,6 +25,12 @@ const PlayerSchema = new Schema({
         minLength: 5,
         match: [/^[a-zA-Z0-9]+$/, 'is invalid']
     },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }],
     level: {type: Number, default: 0},
     xp: {type: Number, default: 0},
     coins: {type: Number, default: 0},
