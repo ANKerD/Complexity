@@ -1,5 +1,7 @@
 const { Schema, model } = require('mongoose');
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
+const config = require('../config');
 
 const PlayerSchema = new Schema({
     email: {
@@ -52,7 +54,7 @@ const PlayerSchema = new Schema({
 PlayerSchema.methods.generateAuthToken = async function() {
     // Generate an auth token for the player
     const player = this;
-    const token = jwt.sign({_id: player._id}, process.env.JWT_KEY);
+    const token = jwt.sign({_id: player._id}, config.jwt_secret);
     player.tokens = player.tokens.concat({token});
     await player.save();
     return token;

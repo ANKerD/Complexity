@@ -15,16 +15,16 @@ const signup = async (req, res) =>{
 	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
 	
 	if(p.length == 0){
-		Player.create(req.body.player)
-			.then(({id}) => {
-				console.log("Id from player [" + req.body.player.nick + "]: " + id);
-				const token = jwt.sign({ id: id}, config.jwt_secret,{expiresIn: '1h'});
-				return res.send({token});
-			})
-			.catch(err => {
-				console.error(err);
-				return res.status(httpStatusCode.BAD_REQUEST).send({msg: "Registration failed", err});
-			})
+		try {
+			const player = new Player(req.body.player);
+			await player.save();
+			console.log("Id from player [" + req.body.player.nick + "]: " + player._id);
+			const token = await player.generateAuthToken()
+			return res.status(201).send({ player, token })
+		} catch (error) {
+			console.error(error);
+			return res.status(httpStatusCode.BAD_REQUEST).send({msg: "Registration failed", error});
+		}
 	} else {
 		res.status(httpStatusCode.BAD_REQUEST).send({ error: user_exists_msg}).end();
 	}
