@@ -22,6 +22,7 @@ const PlayerSchema = new Schema({
         type: String,
         required: [true, "Password can't be blank"],
         select: false,
+        minLength: 5,
         match: [/^[a-zA-Z0-9]+$/, 'is invalid']
     },
     level: {type: Number, default: 0},
