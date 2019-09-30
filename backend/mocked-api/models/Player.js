@@ -1,11 +1,16 @@
 const { Schema, model } = require('mongoose');
+const validator = require('validator')
 
 const PlayerSchema = new Schema({
     email: {
         type: String,
         unique: true,
-        required: [true, "Email can't be blank"]
-        // match: [/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/, 'is invalid']
+        required: [true, "Email can't be blank"],
+        validate: value => {
+            if (!validator.isEmail(value)) {
+                throw new Error({error: 'Invalid Email address'})
+            }
+        }
     },
     nick: {
         type: String,

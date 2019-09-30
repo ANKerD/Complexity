@@ -23,7 +23,7 @@ const signup = async (req, res) =>{
 			})
 			.catch(err => {
 				console.error(err);
-				return res.status(httpStatusCode.BAD_REQUEST).send({error: "Registration failed"});
+				return res.status(httpStatusCode.BAD_REQUEST).send({msg: "Registration failed", err});
 			})
 	} else {
 		res.status(httpStatusCode.BAD_REQUEST).send({ error: user_exists_msg}).end();
