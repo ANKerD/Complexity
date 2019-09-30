@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const Player = require('../models/Player');
+const auth = require("../middleware/auth");
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const httpStatusCode = require('../constants/http-status-code.json');
@@ -81,7 +82,7 @@ const routes = () => {
 
     router.post('/signup', signup);
 		router.post('/login', login);
-		router.get('/:nick/me', myProfile);
+		router.get('/:nick/me', auth, myProfile);
 		router.get('/:nick', profile);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
