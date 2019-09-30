@@ -58,6 +58,19 @@ PlayerSchema.methods.generateAuthToken = async function() {
     return token;
 }
 
+PlayerSchema.statics.findByCredentials = async (email, password) => {
+    // Search for a player by email and password.
+    const player = await Player.findOne({ email } );
+    if (!player) {
+        throw new Error({ error: 'Invalid login credentials' });
+    }
+    const isPasswordMatch = password == player.password;
+    if (!isPasswordMatch) {
+        throw new Error({ error: 'Invalid login credentials' });
+    }
+    return player;
+}
+
 PlayerSchema.methods.toProfile = function(){
     return {
       profile: {
@@ -76,4 +89,6 @@ PlayerSchema.methods.toProfile = function(){
     };
   };
 
-module.exports = model('Player', PlayerSchema )
+
+const Player = model('Player', PlayerSchema)
+module.exports = Player
