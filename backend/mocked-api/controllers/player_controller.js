@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const players = require('../models/Player');
+const Player = require('../models/Player');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const httpStatusCode = require('../constants/http-status-code.json');
@@ -12,10 +12,10 @@ const invalid_field_msg = "Please provide a valid username and password.";
 const signup = async (req, res) =>{
 	const { email, nick } = req.body.player;
 
-	const p = await players.find({$or : [{email:email}, {nick:nick}]}).exec();
+	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
 	
 	if(p.length == 0){
-		players.create(req.body.player)
+		Player.create(req.body.player)
 			.then(({id}) => {
 				console.log("Id from player [" + req.body.player.nick + "]: " + id);
 				const token = jwt.sign({ id: id}, config.jwt_secret,{expiresIn: '1h'});
@@ -38,9 +38,9 @@ const login = async (req, res) => {
 	}
 	
 	if(email){
-		player = await players.findOne({ email }).select('+password');
+		player = await Player.findOne({ email }).select('+password');
 	} else if (nick) {
-		player = await players.findOne({ nick }).select('+password');
+		player = await Player.findOne({ nick }).select('+password');
 	}
 
   if(!player)
@@ -58,7 +58,7 @@ const login = async (req, res) => {
 
 const profile = async (req, res) => {
 	const nick = req.params.nick;
-	const player = await players.findOne({ nick });
+	const player = await Player.findOne({ nick });
 	
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
@@ -69,7 +69,7 @@ const profile = async (req, res) => {
 const myProfile = async (req, res) => {
 	// TODO: check if requester matches authentiated user
 	const nick = req.params.nick;
-	const player = await players.findOne({ nick });
+	const player = await Player.findOne({ nick });
 	
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
