@@ -42,6 +42,9 @@ app.get('/', (req, res) => {
   res.send('TODO: swagger docs');
 })
 
+app.all('*', (req, res) => res.status(404).send({message: 'Not Found'}));
+
+
 app.listen(port, () => {
   console.log(`Running on port ${port}`);
 })
