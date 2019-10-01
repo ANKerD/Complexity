@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { Router } = require('express');
 const Player = require('../models/Player');
 const auth = require("../middleware/auth");
@@ -11,8 +12,12 @@ const invalid_field_msg = "Please provide a valid username and password.";
 
 
 const signup = async (req, res) =>{
-	const { email, nick } = req.body.player;
+	// TODO: add default express handler for this error and for a generic, unknown error
+	if (req.body.player)
+		return res.status(400).send({error: "Send nick or email"});
 
+	const { email, nick } = req.body.player;
+	
 	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
 	
 	if(p.length == 0){
@@ -77,15 +82,39 @@ const myProfile = async (req, res) => {
 	res.send(player.toProfile());
 }
 
+const addFriend = async (req, res) => {
+	const { body: { friend }, player } = req;
+	
+	player.friends.push(friend);
+	player.friends = _.uniq(player.friends);
+	
+	await player.save();
+	res.status(200).send({
+		message: 'success'
+	});
+}
+
+const removeFriend = async (req, res) => {
+	const { body: { friend }, player } = req;
+	
+	player.friends = _.filter(player.friends, frnd => frnd != friend);
+	
+	await player.save();
+	res.status(200).send({
+		message: 'success'
+	});
+}
+
 const routes = () => {
     const router = Router();
 
     router.post('/signup', signup);
-		router.post('/login', login);
-		router.get('/:nick/me', auth, myProfile);
-		router.get('/:nick', profile);
-    router.all('*', (req, res) => res.status(404).send('Not Found'));
-  
+	router.post('/login', login);
+	router.post('/friend', auth, addFriend);
+	router.delete('/friend', auth, removeFriend);
+	router.get('/:nick/me', auth, myProfile);
+	router.get('/:nick', profile);
+    
     return router;
 }
   
