@@ -95,7 +95,7 @@ const routes = () => {
     router.post('/signup', signup);
 	router.post('/login', login);
 	router.get('/:nick/me', auth, myProfile);
-	router.post('/:nick/me', auth, logout);
+	router.post('/:nick/me/logout', auth, logout);
 	router.get('/:nick', profile);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
