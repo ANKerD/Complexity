@@ -100,6 +100,9 @@ const imageUpload = async (req, res) => {
 		return res.status(400).send({ error: user_not_found_msg});
 	
 	const { image } = req.files;
+	if(image == null){
+		return res.status(400).send({ error: "Image not found"});
+	}
 	console.log('image', image);
 	try {
 		const result = await cloudinary.uploader.upload(image.tempFilePath);
