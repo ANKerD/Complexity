@@ -32,6 +32,7 @@ const PlayerSchema = new Schema({
     age: {type: Number},
     nationality: {type: String},
     institution: {type: String},
+    photo: {type: String}
 }, {
     timestamps: true,
     collection: "Players"
@@ -44,6 +45,7 @@ PlayerSchema.methods.toProfile = function(){
         age: this.age,
         nationality: this.nationality,
         institution: this.institution,
+        photo: this.photo,
         nick: this.nick,
         level: this.level,
         problemsSubmitted: this.problemsSubmitted,
