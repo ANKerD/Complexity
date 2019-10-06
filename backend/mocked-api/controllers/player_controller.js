@@ -108,16 +108,16 @@ const imageUpload = async (req, res) => {
 		return res.send({url: result.url }).end();
 	} catch(e) {
 		console.log(e);
-		res.status(500).send({foo: 'bar - deu ruim'}).end();
+		res.status(500).send(e).end();
 	}
 }
 
 const routes = () => {
     router.post('/signup', signup);
-		router.post('/login', login);
-		router.post('/:nick/image', imageUpload);
-		router.get('/:nick/me', myProfile);
-		router.get('/:nick', profile);
+	router.post('/login', login);
+	router.post('/:nick/image', imageUpload);
+	router.get('/:nick/me', myProfile);
+	router.get('/:nick', profile);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
     return router;
