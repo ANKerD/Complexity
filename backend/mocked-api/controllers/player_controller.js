@@ -89,6 +89,16 @@ const logout = async (req, res) => {
     }
 }
 
+const logoutall = async(req, res) => {
+	try {
+        req.player.tokens.splice(0, req.player.tokens.length)
+        await req.player.save()
+        res.send()
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
 const routes = () => {
     const router = Router();
 
@@ -96,6 +106,7 @@ const routes = () => {
 	router.post('/login', login);
 	router.get('/:nick/me', auth, myProfile);
 	router.post('/:nick/me/logout', auth, logout);
+	router.post('/:nick/me/logoutall', auth, logoutall);
 	router.get('/:nick', profile);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
