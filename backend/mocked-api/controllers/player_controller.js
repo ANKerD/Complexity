@@ -77,13 +77,26 @@ const myProfile = async (req, res) => {
 	res.send(player.toProfile());
 }
 
+const logout = async (req, res) => {
+	try {
+        req.player.tokens = req.player.tokens.filter((token) => {
+            return token.token != req.token
+        })
+        await req.player.save()
+        res.send()
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
 const routes = () => {
     const router = Router();
 
     router.post('/signup', signup);
-		router.post('/login', login);
-		router.get('/:nick/me', auth, myProfile);
-		router.get('/:nick', profile);
+	router.post('/login', login);
+	router.get('/:nick/me', auth, myProfile);
+	router.post('/:nick/me', auth, logout);
+	router.get('/:nick', profile);
     router.all('*', (req, res) => res.status(404).send('Not Found'));
   
     return router;
