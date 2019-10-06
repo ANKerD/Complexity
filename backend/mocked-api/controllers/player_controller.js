@@ -82,8 +82,7 @@ const profile = async (req, res) => {
 
 const myProfile = async (req, res) => {
 	// TODO: check if requester matches authentiated user
-	const nick = req.params.nick;
-	const player = await Player.findOne({ nick });
+	const player = req.player;
 	
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
