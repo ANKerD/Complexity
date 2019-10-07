@@ -141,25 +141,27 @@ const imageUpload = async (req, res) => {
 }
 
 const addFriend = async (req, res) => {
-	const { body: { friend }, player } = req;
+	const player = req.player;
+	const friend = req.body.friend;
 	
 	player.friends.push(friend);
 	player.friends = _.uniq(player.friends);
 	
 	await player.save();
 	res.status(200).send({
-		message: 'success'
+		message: 'Added friend with success'
 	});
 }
 
 const removeFriend = async (req, res) => {
-	const { body: { friend }, player } = req;
+	const player = req.player;
+	const friend = req.body.friend;
 	
 	player.friends = _.filter(player.friends, frnd => frnd != friend);
 	
 	await player.save();
 	res.status(200).send({
-		message: 'success'
+		message: 'Removed friend with success'
 	});
 }
 
