@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { Router } = require('express');
 const Player = require('../models/Player');
 const auth = require("../middleware/auth");
@@ -25,8 +26,12 @@ cloudinary.config({
 })
 
 const signup = async (req, res) =>{
-	const { email, nick } = req.body.player;
+	// TODO: add default express handler for this error and for a generic, unknown error
+	if (req.body.player)
+		return res.status(400).send({error: "Send nick or email"});
 
+	const { email, nick } = req.body.player;
+	
 	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
 	
 	if(p.length == 0){
@@ -135,6 +140,31 @@ const imageUpload = async (req, res) => {
 	}
 }
 
+const addFriend = async (req, res) => {
+	const player = req.player;
+	const friend = req.body.friend;
+	
+	player.friends.push(friend);
+	player.friends = _.uniq(player.friends);
+	
+	await player.save();
+	res.status(200).send({
+		message: 'Added friend with success'
+	});
+}
+
+const removeFriend = async (req, res) => {
+	const player = req.player;
+	const friend = req.body.friend;
+	
+	player.friends = _.filter(player.friends, frnd => frnd != friend);
+	
+	await player.save();
+	res.status(200).send({
+		message: 'Removed friend with success'
+	});
+}
+
 const routes = () => {
   	router.post('/signup', signup);
 	router.post('/login', login);
@@ -143,6 +173,8 @@ const routes = () => {
 	router.post('/me/logoutall', auth, logoutall);
 	router.post('/me/image', auth, imageUpload);
 	router.get('/:nick', profile);
+	router.post('/friend', auth, addFriend);
+	router.delete('/friend', auth, removeFriend);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
   
   return router;

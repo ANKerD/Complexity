@@ -103,7 +103,8 @@ PlayerSchema.methods.toProfile = function(){
         problemsSolved: this.problemsSolved,
         submissions: this.submissions,
         teams: this.teams,
-        contests: this.contests
+        contests: this.contests,
+        friends: this.friends
         }
     };
   };
