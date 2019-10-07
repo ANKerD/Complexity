@@ -104,7 +104,7 @@ const logout = async (req, res) => {
 
 const logoutall = async(req, res) => {
 	try {
-        req.player.tokens.splice(0, req.player.tokens.length)
+        req.player.tokens = []
         await req.player.save()
         res.send()
     } catch (error) {
