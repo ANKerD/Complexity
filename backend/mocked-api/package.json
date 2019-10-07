@@ -12,7 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cloudinary": "^1.15.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-fileupload": "^1.1.6-alpha.5",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",

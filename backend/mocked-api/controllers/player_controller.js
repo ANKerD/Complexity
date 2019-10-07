@@ -2,6 +2,8 @@ const _ = require('lodash');
 const { Router } = require('express');
 const Player = require('../models/Player');
 const auth = require("../middleware/auth");
+const fileUpload = require('express-fileupload');
+const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const httpStatusCode = require('../constants/http-status-code.json');
@@ -10,6 +12,18 @@ const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
 const invalid_field_msg = "Please provide a valid username and password.";
 
+const router = Router();
+
+router.use(fileUpload({
+	useTempFiles : true,
+	tempFileDir : '/tmp/'
+}));
+
+cloudinary.config({
+  cloud_name: config.cloudinary.cloud_name,
+  api_key: config.cloudinary.api_key,
+  api_secret: config.cloudinary.api_secret
+})
 
 const signup = async (req, res) =>{
 	// TODO: add default express handler for this error and for a generic, unknown error
@@ -73,13 +87,57 @@ const profile = async (req, res) => {
 
 const myProfile = async (req, res) => {
 	// TODO: check if requester matches authentiated user
-	const nick = req.params.nick;
-	const player = await Player.findOne({ nick });
+	const player = req.player;
 	
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
 	
 	res.send(player.toProfile());
+}
+
+const logout = async (req, res) => {
+	try {
+        req.player.tokens = req.player.tokens.filter((token) => {
+            return token.token != req.token
+        })
+        await req.player.save()
+        res.send()
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
+const logoutall = async(req, res) => {
+	try {
+        req.player.tokens = []
+        await req.player.save()
+        res.send()
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
+const imageUpload = async (req, res) => {
+	console.log('uploading...');
+	const player = req.player;
+	
+	if(!player)
+		return res.status(400).send({ error: user_not_found_msg});
+	
+	const { image } = req.files;
+	if(image == null){
+		return res.status(400).send({ error: "Image not found"});
+	}
+	console.log('image', image);
+	try {
+		const result = await cloudinary.uploader.upload(image.tempFilePath);
+		player.photo = result.url;
+		player.save();
+		return res.send({url: result.url }).end();
+	} catch(e) {
+		console.log(e);
+		res.status(500).send(e).end();
+	}
 }
 
 const addFriend = async (req, res) => {
@@ -106,16 +164,18 @@ const removeFriend = async (req, res) => {
 }
 
 const routes = () => {
-    const router = Router();
-
-    router.post('/signup', signup);
+  	router.post('/signup', signup);
 	router.post('/login', login);
+	router.get('/me', auth, myProfile);
+	router.post('/me/logout', auth, logout);
+	router.post('/me/logoutall', auth, logoutall);
+	router.post('/me/image', auth, imageUpload);
+	router.get('/:nick', profile);
 	router.post('/friend', auth, addFriend);
 	router.delete('/friend', auth, removeFriend);
-	router.get('/:nick/me', auth, myProfile);
-	router.get('/:nick', profile);
-    
-    return router;
+  	router.all('*', (req, res) => res.status(404).send('Not Found'));
+  
+  return router;
 }
   
 module.exports = routes;
