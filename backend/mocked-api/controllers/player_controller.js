@@ -114,8 +114,7 @@ const logoutall = async(req, res) => {
 
 const imageUpload = async (req, res) => {
 	console.log('uploading...');
-	const nick = req.params.nick;
-	const player = await Player.findOne({ nick });
+	const player = req.player;
 	
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
@@ -139,10 +138,10 @@ const imageUpload = async (req, res) => {
 const routes = () => {
   	router.post('/signup', signup);
 	router.post('/login', login);
-	router.get('/:nick/me', auth, myProfile);
-	router.post('/:nick/me/logout', auth, logout);
-	router.post('/:nick/me/logoutall', auth, logoutall);
-	router.post('/:nick/image', imageUpload);
+	router.get('/me', auth, myProfile);
+	router.post('/me/logout', auth, logout);
+	router.post('/me/logoutall', auth, logoutall);
+	router.post('/me/image', auth, imageUpload);
 	router.get('/:nick', profile);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
   
