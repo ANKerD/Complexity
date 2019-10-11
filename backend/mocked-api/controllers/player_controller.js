@@ -27,13 +27,12 @@ cloudinary.config({
 
 const signup = async (req, res) =>{
 	// TODO: add default express handler for this error and for a generic, unknown error
-	if (req.body.player)
-		return res.status(400).send({error: "Send nick or email"});
+	// if (req.body.player) return res.status(400).send({error: "Send nick or email"});
 
 	const { email, nick } = req.body.player;
-	
+
 	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
-	
+
 	if(p.length == 0){
 		try {
 			const player = new Player(req.body.player);
@@ -53,12 +52,12 @@ const signup = async (req, res) =>{
 const login = async (req, res) => {
 	const { email, nick, password } = req.body.player;
 	var player = undefined;
-	
+
 	if(email && nick){
 		console.log("Send nick or email");
 		return res.status(400).send({error: "Send nick or email"});
 	}
-	
+
 	try {
 		if(email){
 			player = await Player.findByEmailAndPassword(email, password);
@@ -78,20 +77,20 @@ const login = async (req, res) => {
 const profile = async (req, res) => {
 	const nick = req.params.nick;
 	const player = await Player.findOne({ nick });
-	
+
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
-	
+
 	res.send(player.toProfile());
 }
 
 const myProfile = async (req, res) => {
 	// TODO: check if requester matches authentiated user
 	const player = req.player;
-	
+
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
-	
+
 	res.send(player.toProfile());
 }
 
@@ -120,10 +119,10 @@ const logoutall = async(req, res) => {
 const imageUpload = async (req, res) => {
 	console.log('uploading...');
 	const player = req.player;
-	
+
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
-	
+
 	const { image } = req.files;
 	if(image == null){
 		return res.status(400).send({ error: "Image not found"});
@@ -143,10 +142,10 @@ const imageUpload = async (req, res) => {
 const addFriend = async (req, res) => {
 	const player = req.player;
 	const friend = req.body.friend;
-	
+
 	player.friends.push(friend);
 	player.friends = _.uniq(player.friends);
-	
+
 	await player.save();
 	res.status(200).send({
 		message: 'Added friend with success'
@@ -156,13 +155,45 @@ const addFriend = async (req, res) => {
 const removeFriend = async (req, res) => {
 	const player = req.player;
 	const friend = req.body.friend;
-	
+
 	player.friends = _.filter(player.friends, frnd => frnd != friend);
-	
+
 	await player.save();
 	res.status(200).send({
 		message: 'Removed friend with success'
 	});
+}
+
+const updateProfile = async (req, res) => {
+    // Verificar se o usuário está logado. FALTA
+    // Verificar se o usuário a ser atualizado é de fato o usuário logado. FALTA
+    // Verificar se cada campo a ser atualizado é válido. OK
+
+    const player = req.player;
+    const {name,age,nationality,institution} = req.body.updates;
+
+    if (typeof name === "string") {
+        player.name = name;
+    }
+
+    if (typeof age === "number" && Number.isInteger(age)){
+        player.age = age;
+    }
+
+    // Adicionar um enum com as nacionalidades possíveis e verificar se a nacionalidade passada é válida.
+    if (typeof nationality === "string"){
+        player.nationality = nationality;
+    }
+
+    if (typeof institution === "string"){
+        player.institution = institution;
+    }
+
+    player.save();
+
+    res.status(200).send({
+    	message: "User successfully updated"
+    });
 }
 
 const routes = () => {
@@ -175,9 +206,10 @@ const routes = () => {
 	router.get('/:nick', profile);
 	router.post('/friend', auth, addFriend);
 	router.delete('/friend', auth, removeFriend);
+	router.post('/update/',auth,updateProfile);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
-  
+
   return router;
 }
-  
+
 module.exports = routes;
