@@ -11,6 +11,7 @@ const httpStatusCode = require('../constants/http-status-code.json');
 const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
 const invalid_field_msg = "Please provide a valid username and password.";
+const no_search_results = "No players were found";
 
 const router = Router();
 
@@ -194,6 +195,30 @@ const updateProfile = async (req, res) => {
     res.status(200).send({
     	message: "User successfully updated"
     });
+};
+
+const searchPlayerBySubstring = async (req,res) => {
+	const pattern = req.body.pattern;
+	let result = await Player.find({"nick": {$regex: `.*${pattern}.*`}});
+
+	if (!result.length)
+		result = no_search_results;
+
+	res.status(200).send({
+		results: result
+	});
+};
+
+const searchPlayerExactMatch = async (req,res) => {
+	const pattern = req.body.pattern;
+	let result = await Player.find({"nick":pattern});
+
+	if (!result.length)
+		result = no_search_results;
+
+	res.status(200).send({
+		results: result
+	});
 }
 
 const routes = () => {
@@ -207,6 +232,8 @@ const routes = () => {
 	router.post('/friend', auth, addFriend);
 	router.delete('/friend', auth, removeFriend);
 	router.post('/update/',auth,updateProfile);
+	router.post('/search/substring',auth,searchPlayerBySubstring);
+	router.post('/search/exact',auth,searchPlayerExactMatch)
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
 
   return router;
