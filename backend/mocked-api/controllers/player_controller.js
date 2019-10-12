@@ -11,7 +11,7 @@ const httpStatusCode = require('../constants/http-status-code.json');
 const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
 const invalid_field_msg = "Please provide a valid username and password.";
-const no_search_results = "No players were found";
+const invalid_password_msg = "Please provide a valid password";
 
 const router = Router();
 
@@ -199,27 +199,47 @@ const updateProfile = async (req, res) => {
 
 const searchPlayerBySubstring = async (req,res) => {
 	const pattern = req.body.pattern;
-	let result = await Player.find({"nick": {$regex: `.*${pattern}.*`}});
-
-	if (!result.length)
-		result = no_search_results;
+	const result = await Player.find({"nick": {$regex: `.*${pattern}.*`}});
 
 	res.status(200).send({
-		results: result
+		results: result,
+		message: `${result.length} results found`
 	});
 };
 
 const searchPlayerExactMatch = async (req,res) => {
 	const pattern = req.body.pattern;
-	let result = await Player.find({"nick":pattern});
-
-	if (!result.length)
-		result = no_search_results;
+	const result = await Player.find({"nick":pattern});
 
 	res.status(200).send({
-		results: result
+		results: result,
+		message: `${result.length} results found`
 	});
 }
+
+const validatePassword = (pass) => {
+	return Boolean(/^[\w]{5,}$/.exec(pass));
+};
+
+const changePassword = async (req,res) =>{
+	const player = req.player;
+	const newPassword = req.body.newPassword;
+	let status = 200;
+	let response = {};
+
+	if (validatePassword(newPassword)){
+		player.password = newPassword;
+		player.save();
+
+		response.message = "Password successfully updated";
+	}
+	else {
+		status = 400; // Esse status code é mesmo apropriado?
+		response.error = invalid_password_msg;
+	}
+
+	res.status(status).send(response);
+};
 
 const routes = () => {
   	router.post('/signup', signup);
@@ -234,6 +254,7 @@ const routes = () => {
 	router.post('/update/',auth,updateProfile);
 	router.post('/search/substring',auth,searchPlayerBySubstring);
 	router.post('/search/exact',auth,searchPlayerExactMatch)
+	router.post('/update/password',auth,changePassword);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
 
   return router;
