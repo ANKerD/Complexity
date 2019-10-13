@@ -176,14 +176,14 @@ const removeFriend = async (req, res) => {
 
 const forgetPassword = async (req, res) =>{
 	try{
-	const {email} = req.body.player;
-	const player = await Player.findOne({ email });
-	if(!player)
-		return res.status(404).send({user_not_found_msg});
-	const {nick} = player;
-	const new_password =  await player.generateNewPassword();
-	emailT.send(mailer.forgetPass(email, nick, new_password));
-	return res.status(200).send({message: 'new password sent to email'});
+		const {email} = req.body.player;
+		const player = await Player.findOne({ email });
+		if(!player)
+			return res.status(404).send({user_not_found_msg});
+		const {nick} = player;
+		const new_password =  await player.generateNewPassword();
+		emailT.send(mailer.forgetPass(email, nick, new_password));
+		return res.status(200).send({message: 'new password sent to email'});
 	}catch(e){
 		return res.status(500).send(e).end();
 	}
