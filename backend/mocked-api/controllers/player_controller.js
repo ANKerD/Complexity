@@ -166,9 +166,6 @@ const removeFriend = async (req, res) => {
 }
 
 const updateProfile = async (req, res) => {
-    // Verificar se o usuário está logado. FALTA
-    // Verificar se o usuário a ser atualizado é de fato o usuário logado. FALTA
-    // Verificar se cada campo a ser atualizado é válido. OK
 
     const player = req.player;
     const {name,age,nationality,institution} = req.body.updates;
@@ -198,24 +195,14 @@ const updateProfile = async (req, res) => {
 };
 
 const searchPlayerBySubstring = async (req,res) => {
-	const pattern = req.body.pattern;
+	const pattern = req.params.pattern;
 	const result = await Player.find({"nick": {$regex: `.*${pattern}.*`}});
 
 	res.status(200).send({
-		results: result,
+		results: result.map(elem => elem.nick),
 		message: `${result.length} results found`
 	});
 };
-
-const searchPlayerExactMatch = async (req,res) => {
-	const pattern = req.body.pattern;
-	const result = await Player.find({"nick":pattern});
-
-	res.status(200).send({
-		results: result,
-		message: `${result.length} results found`
-	});
-}
 
 const validatePassword = (pass) => {
 	return Boolean(/^[\w]{5,}$/.exec(pass));
@@ -227,7 +214,7 @@ const changePassword = async (req,res) =>{
 	let status = 200;
 	let response = {};
 
-	if (validatePassword(newPassword)){
+	if (validatePassword(newPassword) && player.password !== newPassword){
 		player.password = newPassword;
 		player.save();
 
@@ -252,8 +239,7 @@ const routes = () => {
 	router.post('/friend', auth, addFriend);
 	router.delete('/friend', auth, removeFriend);
 	router.post('/update/',auth,updateProfile);
-	router.post('/search/substring',auth,searchPlayerBySubstring);
-	router.post('/search/exact',auth,searchPlayerExactMatch)
+	router.get('/search/:pattern',auth,searchPlayerBySubstring);
 	router.post('/update/password',auth,changePassword);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
 
