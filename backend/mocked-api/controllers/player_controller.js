@@ -7,12 +7,20 @@ const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const httpStatusCode = require('../constants/http-status-code.json');
+const mailer = require('../mailer/mailer');
+const Email = require('email-templates');
 
 const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
 const invalid_field_msg = "Please provide a valid username and password.";
 
 const router = Router();
+
+const emailT = new Email({
+	transport: mailer.transporter,
+	send: true,
+	preview: false,
+  });
 
 router.use(fileUpload({
 	useTempFiles : true,
@@ -40,6 +48,7 @@ const signup = async (req, res) =>{
 			await player.save();
 			console.log("Id from player [" + req.body.player.nick + "]: " + player._id);
 			const token = await player.generateAuthToken()
+			emailT.send(mailer.welcome(email, nick));
 			return res.status(201).send({ player, token })
 		} catch (error) {
 			console.error(error);
@@ -165,7 +174,25 @@ const removeFriend = async (req, res) => {
 	});
 }
 
+const forgetPassword = async (req, res) =>{
+	try{
+		const {email} = req.body.player;
+		const player = await Player.findOne({ email });
+		if(!player)
+			return res.status(404).send({user_not_found_msg});
+		const {nick} = player;
+		const new_password =  await player.generateNewPassword();
+		emailT.send(mailer.forgetPass(email, nick, new_password));
+		return res.status(200).send({message: 'new password sent to email'});
+	}catch(e){
+		return res.status(500).send(e).end();
+	}
+	
+}
+
+
 const routes = () => {
+	router.post('/forgetpassword', forgetPassword);
   	router.post('/signup', signup);
 	router.post('/login', login);
 	router.get('/me', auth, myProfile);

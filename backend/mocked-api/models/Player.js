@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose');
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const config = require('../config');
+const crypto = require('crypto');
 
 const PlayerSchema = new Schema({
     email: {
@@ -51,6 +52,15 @@ const PlayerSchema = new Schema({
     timestamps: true,
     collection: "Players"
 });
+
+
+PlayerSchema.methods.generateNewPassword = async function() {
+    const player = this;
+    const newPassword = crypto.randomBytes(20).toString('hex');
+    player.password = newPassword;
+    player.save();
+    return newPassword;
+}
 
 PlayerSchema.methods.generateAuthToken = async function() {
     // Generate an auth token for the player
