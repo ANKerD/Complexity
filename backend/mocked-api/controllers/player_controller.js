@@ -232,15 +232,15 @@ const routes = () => {
   	router.post('/signup', signup);
 	router.post('/login', login);
 	router.get('/me', auth, myProfile);
+	router.post('/me', auth, updateProfile);
 	router.post('/me/logout', auth, logout);
 	router.post('/me/logoutall', auth, logoutall);
 	router.post('/me/image', auth, imageUpload);
+	router.post('/me/password',auth, changePassword);
 	router.get('/:nick', profile);
 	router.post('/friend', auth, addFriend);
 	router.delete('/friend', auth, removeFriend);
-	router.post('/update/',auth,updateProfile);
 	router.get('/search/:pattern',auth,searchPlayerBySubstring);
-	router.post('/update/password',auth,changePassword);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
 
   return router;
