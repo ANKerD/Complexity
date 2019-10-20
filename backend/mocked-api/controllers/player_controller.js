@@ -204,6 +204,10 @@ const searchPlayerBySubstring = async (req,res) => {
 	});
 };
 
+/*
+* At least 5 characters
+* Alphanumerics & Underscore
+*/
 const validatePassword = (pass) => {
 	return Boolean(/^[\w]{5,}$/.exec(pass));
 };
