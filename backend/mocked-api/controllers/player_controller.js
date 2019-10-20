@@ -210,12 +210,12 @@ const validatePassword = (pass) => {
 
 const changePassword = async (req,res) =>{
 	const player = req.player;
-	const newPassword = req.body.newPassword;
+	const new_password = req.body.new_password;
 	let status = 200;
 	let response = {};
 
-	if (validatePassword(newPassword) && player.password !== newPassword){
-		player.password = newPassword;
+	if (validatePassword(new_password) && player.password !== new_password){
+		player.password = new_password;
 		player.save();
 
 		response.message = "Password successfully updated";
