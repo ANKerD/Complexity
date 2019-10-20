@@ -6,7 +6,7 @@ const auth = async(req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '')
         const data = jwt.verify(token, config.jwt_secret)
-        const player = await Player.findOne({ _id: data._id, 'tokens.token': token })
+        const player = await Player.findOne({ _id: data._id, 'tokens.token': token }).select('+password')
         if (!player) {
             throw new Error("Errow while authorization token")
         }

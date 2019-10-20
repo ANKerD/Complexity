@@ -13,6 +13,7 @@ const Email = require('email-templates');
 const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
 const invalid_field_msg = "Please provide a valid username and password.";
+const invalid_password_msg = "Please provide a valid password";
 
 const router = Router();
 
@@ -35,13 +36,12 @@ cloudinary.config({
 
 const signup = async (req, res) =>{
 	// TODO: add default express handler for this error and for a generic, unknown error
-	if (req.body.player)
-		return res.status(400).send({error: "Send nick or email"});
+	// if (req.body.player) return res.status(400).send({error: "Send nick or email"});
 
 	const { email, nick } = req.body.player;
-	
+
 	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
-	
+
 	if(p.length == 0){
 		try {
 			const player = new Player(req.body.player);
@@ -62,12 +62,12 @@ const signup = async (req, res) =>{
 const login = async (req, res) => {
 	const { email, nick, password } = req.body.player;
 	var player = undefined;
-	
+
 	if(email && nick){
 		console.log("Send nick or email");
 		return res.status(400).send({error: "Send nick or email"});
 	}
-	
+
 	try {
 		if(email){
 			player = await Player.findByEmailAndPassword(email, password);
@@ -87,20 +87,20 @@ const login = async (req, res) => {
 const profile = async (req, res) => {
 	const nick = req.params.nick;
 	const player = await Player.findOne({ nick });
-	
+
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
-	
+
 	res.send(player.toProfile());
 }
 
 const myProfile = async (req, res) => {
 	// TODO: check if requester matches authentiated user
 	const player = req.player;
-	
+
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
-	
+
 	res.send(player.toProfile());
 }
 
@@ -129,10 +129,10 @@ const logoutall = async(req, res) => {
 const imageUpload = async (req, res) => {
 	console.log('uploading...');
 	const player = req.player;
-	
+
 	if(!player)
 		return res.status(400).send({ error: user_not_found_msg});
-	
+
 	const { image } = req.files;
 	if(image == null){
 		return res.status(400).send({ error: "Image not found"});
@@ -152,10 +152,10 @@ const imageUpload = async (req, res) => {
 const addFriend = async (req, res) => {
 	const player = req.player;
 	const friend = req.body.friend;
-	
+
 	player.friends.push(friend);
 	player.friends = _.uniq(player.friends);
-	
+
 	await player.save();
 	res.status(200).send({
 		message: 'Added friend with success'
@@ -165,14 +165,83 @@ const addFriend = async (req, res) => {
 const removeFriend = async (req, res) => {
 	const player = req.player;
 	const friend = req.body.friend;
-	
+
 	player.friends = _.filter(player.friends, frnd => frnd != friend);
-	
+
 	await player.save();
 	res.status(200).send({
 		message: 'Removed friend with success'
 	});
 }
+
+const updateProfile = async (req, res) => {
+
+    const player = req.player;
+    const {name,age,nationality,institution} = req.body.updates;
+
+    if (typeof name === "string") {
+        player.name = name;
+    }
+
+    if (typeof age === "number" && Number.isInteger(age)){
+        player.age = age;
+    }
+
+    // Adicionar um enum com as nacionalidades possíveis e verificar se a nacionalidade passada é válida.
+    if (typeof nationality === "string"){
+        player.nationality = nationality;
+    }
+
+    if (typeof institution === "string"){
+        player.institution = institution;
+    }
+
+    player.save();
+
+    res.status(200).send({
+    	message: "User successfully updated"
+    });
+};
+
+const searchPlayerBySubstring = async (req,res) => {
+	const pattern = req.params.pattern;
+	const result = await Player.find({"nick": {$regex: `.*${pattern}.*`}});
+
+	res.status(200).send({
+		results: result.map(elem => elem.nick),
+		message: `${result.length} results found`
+	});
+};
+
+/*
+* At least 5 characters
+* Alphanumerics & Underscore
+*/
+const validatePassword = (pass) => {
+	return Boolean(/^[\w]{5,}$/.exec(pass));
+};
+
+const changePassword = async (req,res) =>{
+	const player = req.player;
+	const current_password = req.body.current_password;
+	const new_password = req.body.new_password;
+	let status = 200;
+	let response = {};
+
+	if (player.password === current_password && validatePassword(new_password) && player.password !== new_password){
+		player.password = new_password;
+		player.save();
+
+		response.message = "Password successfully updated";
+	}
+	else {
+		status = 400; // Esse status code é mesmo apropriado?
+		response.error = invalid_password_msg;
+	}
+
+	res.status(status).send(response);
+};
+
 
 const forgetPassword = async (req, res) =>{
 	try{
@@ -190,21 +259,23 @@ const forgetPassword = async (req, res) =>{
 	
 }
 
-
 const routes = () => {
 	router.post('/forgetpassword', forgetPassword);
   	router.post('/signup', signup);
 	router.post('/login', login);
 	router.get('/me', auth, myProfile);
+	router.post('/me', auth, updateProfile);
 	router.post('/me/logout', auth, logout);
 	router.post('/me/logoutall', auth, logoutall);
 	router.post('/me/image', auth, imageUpload);
+	router.post('/me/password',auth, changePassword);
 	router.get('/:nick', profile);
 	router.post('/friend', auth, addFriend);
 	router.delete('/friend', auth, removeFriend);
+	router.get('/search/:pattern',auth,searchPlayerBySubstring);
   	router.all('*', (req, res) => res.status(404).send('Not Found'));
-  
+
   return router;
 }
-  
+
 module.exports = routes;
