@@ -214,11 +214,12 @@ const validatePassword = (pass) => {
 
 const changePassword = async (req,res) =>{
 	const player = req.player;
+	const current_password = req.body.current_password;
 	const new_password = req.body.new_password;
 	let status = 200;
 	let response = {};
 
-	if (validatePassword(new_password) && player.password !== new_password){
+	if (player.password === current_password && validatePassword(new_password) && player.password !== new_password){
 		player.password = new_password;
 		player.save();
 
