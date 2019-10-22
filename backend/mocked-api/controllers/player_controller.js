@@ -9,6 +9,7 @@ const config = require('../config');
 const httpStatusCode = require('../constants/http-status-code.json');
 const mailer = require('../mailer/mailer');
 const Email = require('email-templates');
+const bcrypt = require('bcryptjs');
 
 const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
@@ -39,6 +40,7 @@ const signup = async (req, res) =>{
 	// if (req.body.player) return res.status(400).send({error: "Send nick or email"});
 
 	const { email, nick } = req.body.player;
+	console.log(req.body.player);
 
 	const p = await Player.find({$or : [{email:email}, {nick:nick}]}).exec();
 
@@ -225,10 +227,15 @@ const changePassword = async (req,res) =>{
 	const player = req.player;
 	const current_password = req.body.current_password;
 	const new_password = req.body.new_password;
+
+	const isPasswordMatch = await bcrypt.compare(current_password, player.password);
+	console.log("Is Password Match: " + isPasswordMatch);
+	const isEquals = await bcrypt.compare(new_password, player.password);
+	console.log("Is Equals: " + isEquals);
 	let status = 200;
 	let response = {};
 
-	if (player.password === current_password && validatePassword(new_password) && player.password !== new_password){
+	if (isPasswordMatch && validatePassword(new_password) && !isEquals){
 		player.password = new_password;
 		player.save();
 

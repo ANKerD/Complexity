@@ -3,6 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const config = require('../config');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 const PlayerSchema = new Schema({
     email: {
@@ -26,7 +27,6 @@ const PlayerSchema = new Schema({
         required: [true, "Password can't be blank"],
         select: false,
         minLength: 5,
-        match: [/^[a-zA-Z0-9]+$/, 'is invalid']
     },
     tokens: [{
         token: {
@@ -53,6 +53,14 @@ const PlayerSchema = new Schema({
     collection: "Players"
 });
 
+PlayerSchema.pre('save', async function (next) {
+    // Hash the password before saving the user model
+    const player = this
+    if (player.isModified('password')) {
+        player.password = await bcrypt.hash(player.password, 8)
+    }
+    next()
+})
 
 PlayerSchema.methods.generateNewPassword = async function() {
     const player = this;
@@ -78,7 +86,7 @@ PlayerSchema.statics.findByEmailAndPassword = async (email, password) => {
     if (!player) {
         throw new Error({ error: 'Invalid login credentials' });
     }
-    const isPasswordMatch = password == player.password;
+    const isPasswordMatch = await bcrypt.compare(password, player.password);
     if (!isPasswordMatch) {
         throw new Error({ error: 'Invalid login credentials' });
     }
@@ -92,7 +100,7 @@ PlayerSchema.statics.findByNickAndPassword = async (nick, password) => {
     if (!player) {
         throw new Error({ error: 'Invalid login credentials' });
     }
-    const isPasswordMatch = password == player.password;
+    const isPasswordMatch = await bcrypt.compare(password, player.password);
     if (!isPasswordMatch) {
         throw new Error({ error: 'Invalid login credentials' });
     }
