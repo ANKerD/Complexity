@@ -35,7 +35,7 @@ it('should throw an error when creating two users with same credentials', async 
   const [req, res] = doSignup(defaultCredentials);
   
   expect(res.status).toBeCalled();
-  expect(httpUtils.status.isSuccess(res.mock.calls[0][0])).toBeTruthy();
+  expect(httpUtils.status.isError(res.mock.calls[0][0])).toBeTruthy();
   
   expect(res.json).toBeCalled();
 });
