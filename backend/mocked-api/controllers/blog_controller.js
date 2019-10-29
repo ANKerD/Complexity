@@ -3,21 +3,12 @@ const { Router } = require('express');
 const Player = require('../models/Player');
 const Blog = require("../models/Blog");
 const auth = require("../middleware/auth");
-const cloudinary = require('cloudinary').v2;
-const config = require('../config');
 
 const router = Router();
 
 const blog_not_found_msg = "Blog not found";
 
-cloudinary.config({
-  cloud_name: config.cloudinary.cloud_name,
-  api_key: config.cloudinary.api_key,
-  api_secret: config.cloudinary.api_secret
-});
-
-
-const showBlog = async (req,res) => {
+module.exports.showBlog = async (req,res) => {
     const _id = req.params.blogId;
     const blog = await Blog.findOne({_id});
 
@@ -28,7 +19,7 @@ const showBlog = async (req,res) => {
     res.status(200).send(await blog.show());
 };
 
-const createBlog = async (req,res) => {
+module.exports.createBlog = async (req,res) => {
     const {title,body} = req.body.blog;
     const _authorId = req.player._id;
 
@@ -39,7 +30,7 @@ const createBlog = async (req,res) => {
     res.status(200).send({msg: "Blog created"});
 };
 
-const like = async (req, res) => {
+module.exports.like = async (req, res) => {
     const id = req.params.blogId;
     const playerId = req.player._id;
     const blog = await Blog.findOne({_id:id});
@@ -57,7 +48,7 @@ const like = async (req, res) => {
     res.status(200).send({msg:"Like added"})
 };
 
-const dislike = async (req,res) => {
+module.exports.dislike = async (req,res) => {
     const id = req.params.blogId;
     const playerId = req.player._id;
     const blog = await Blog.findOne({_id:id});
@@ -76,7 +67,7 @@ const dislike = async (req,res) => {
 
 };
 
-const addComment = async (req,res) => {
+module.exports.addComment = async (req,res) => {
     const playerId = req.player._id;
     const id = req.params.blogId;
     const blog = await Blog.findOne({_id:id});
@@ -95,7 +86,7 @@ const addComment = async (req,res) => {
     }
 };
 
-const removeComment = async (req,res) => {
+module.exports.removeComment = async (req,res) => {
     const playerId = req.player._id;
     const blogId = req.params.blogId;
     const blog = await Blog.findOne({_id:blogId});
@@ -113,54 +104,36 @@ const removeComment = async (req,res) => {
     }
 };
 
-const sortByTime =  async(req,res) => {
+module.exports.sortByTime =  async(req,res) => {
     const result = await Blog.sortByCreationTime();
 
     res.status(200).send(result);
 };
 
-const sortByLikes = async(req,res) => {
+module.exports.sortByLikes = async(req,res) => {
     const result = await Blog.sortByLikes();
 
     res.status(200).send({result});
 };
 
-const searchTitle = async(req,res) => {
+module.exports.searchTitle = async(req,res) => {
     const pattern = req.params.pattern;
     const result = await Blog.searchTitle(pattern);
 
     res.status(200).send({query:result});
 };
 
-const searchBody = async(req,res) => {
+module.exports.searchBody = async(req,res) => {
     const pattern = req.params.pattern;
-    const result = await Blog.searchTitle(pattern);
+    const result = await Blog.searchBody(pattern);
 
     res.status(200).send({query:result});
 };
 
-const searchAuthor = async(req,res) => {
+module.exports.searchAuthor = async(req,res) => {
     const authorId = req.params.authorId;
     const result = await Blog.findByAuthorID(authorId);
 
     res.status(200).send({query:result});
 };
 
-
-const routes = () => {
-    router.get("/:blogId", auth, showBlog);
-    router.post("/create", auth, createBlog);
-    router.post("/:blogId/like", auth, like);
-    router.post("/:blogId/dislike", auth, dislike);
-    router.post("/:blogId/comment", auth, addComment);
-    router.delete("/:blogId/comment/:commentId", auth, removeComment);
-    router.get("/sort/time", auth, sortByTime);
-    router.get("/sort/likes", auth, sortByLikes);
-    router.get("/search/title/:pattern", auth, searchTitle);
-    router.get("/search/body/:pattern", auth, searchBody);
-    router.get("/search/author/:authorId", auth, searchAuthor);
-
-  return router;
-};
-
-module.exports = routes;

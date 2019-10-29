@@ -9,7 +9,7 @@ const config = require('./config');
 const playerRoute = require('./controllers/player_controller');
 const problemRoute = require('./routes/problem');
 const submissionsRoute = require('./routes/submission');
-const blogRoute = require('./controllers/blog_controller')
+const blogRoute = require('./routes/blogRoute')
 
 const app = express();
 const port = config.port;
