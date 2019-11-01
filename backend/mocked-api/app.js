@@ -3,12 +3,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const util = require('util')
+const cloudinary = require('cloudinary').v2;
+const fileUpload = require('express-fileupload');
 
 const config = require('./config');
 
-const playerRoute = require('./controllers/player_controller');
+
+const playerRoute = require('./routes/playerRoute');
 const problemRoute = require('./routes/problemRoute');
 const submissionsRoute = require('./routes/submission');
+const blogRoute = require('./routes/blogRoute')
 
 const app = express();
 const port = config.port;
@@ -32,6 +36,18 @@ try {
   handleError(error);
 }
 
+// Image upload setup
+app.use(fileUpload({
+	useTempFiles : true,
+	tempFileDir : '/tmp/'
+}));
+cloudinary.config({
+
+  cloud_name: config.cloudinary.cloud_name,
+  api_key: config.cloudinary.api_key,
+  api_secret: config.cloudinary.api_secret
+});
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -39,6 +55,7 @@ app.use(bodyParser.json());
 app.use('/player', playerRoute());
 app.use('/problem', problemRoute());
 app.use('/submission', submissionsRoute());
+app.use('/blog', blogRoute());
 
 app.get('/', (req, res) => {
   res.send('TODO: swagger docs');
