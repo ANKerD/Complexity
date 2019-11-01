@@ -125,7 +125,7 @@ PlayerSchema.methods.toProfile = function(){
         friends: this.friends
         }
     };
-  };
+};
 
 
 const Player = model('Player', PlayerSchema)
