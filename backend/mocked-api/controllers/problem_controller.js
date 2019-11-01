@@ -17,22 +17,47 @@ module.exports.registerProblem = async (req, res) =>{
     }
 }
 
-module.exports.findProblems = async (req, res) =>{
-    //SO SE LEVA EM CONSIDERAÇÃO O LEVEL CASO A SEJA UMA PESQUISA POR LEVEL
+module.exports.findProblemsByLevel = async (req, res) =>{
     const level = req.params.level;
-    let problems;
-
-    if(level === undefined){
-        problems = await Problem.find();
-    }else{
-        problems = await Problem.find({level});
+    try{
+        const problems = await Problem.find({level});
+    
+        return res.status(httpStatusCode.OK).send({
+            results: problems,
+            message: `${problems.length} results found`
+        });
+    }catch(err){
+        return res.status(httpStatusCode.NOT_FOUND).send({error: "Not Found"});
     }
+}   
 
+module.exports.findProblems = async (req, res) =>{
+    const problems = await Problem.find();
+    
     return res.status(httpStatusCode.OK).send({
         results: problems,
         message: `${problems.length} results found`
     });
-}   
+}
+
+module.exports.findProblemsInOrder = async (req, res) =>{
+    const order = req.params.order;
+    const problems = await Problem.find();
+    if(order === "down"){
+        problems.sort(function(a,b) {
+            return a.level > b.level ? -1 : a.level < b.level ? 1 : 0;
+        });    
+    }else{
+        problems.sort(function(a,b) {
+            return a.level < b.level ? -1 : a.level > b.level ? 1 : 0;
+        });
+    }
+    
+    return res.status(httpStatusCode.OK).send({
+        results: problems,
+        message: `${problems.length} results found`
+    });
+}
 
 module.exports.findProblemsBySubstring = async (req, res) => {
     const pattern = req.params.pattern;

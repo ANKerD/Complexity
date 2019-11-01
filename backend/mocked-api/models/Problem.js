@@ -19,7 +19,12 @@ const ProblemSchema = new Schema({
         email: {type: String}
     },
     photo: {type: String},
-    samples: {type: Array, required: true}
+    samples: [
+        {
+            "input": {type: String, required: true},
+            "output": {type: String, required: true}
+        }
+    ]
 
 }, {
     timestamps: true,

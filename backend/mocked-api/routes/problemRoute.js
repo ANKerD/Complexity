@@ -6,9 +6,10 @@ const router = Router();
 
 const routes = () =>{
     router.post('/registerproblem', problemController.registerProblem);
-    router.get('/findproblems/:level', problemController.findProblems);
+    router.get('/findproblems/:level', problemController.findProblemsByLevel);
     router.get('/findproblems', problemController.findProblems);
     router.get('/findproblemsubstring/:pattern', problemController.findProblemsBySubstring);
+    router.get('/findproblemsorder/:order', problemController.findProblemsInOrder);
 
     return router;
 }
