@@ -7,7 +7,7 @@ const util = require('util')
 const config = require('./config');
 
 const playerRoute = require('./controllers/player_controller');
-const problemRoute = require('./routes/problem');
+const problemRoute = require('./routes/problemRoute');
 const submissionsRoute = require('./routes/submission');
 
 const app = express();

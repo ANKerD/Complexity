@@ -2,8 +2,12 @@ const { Schema, model } = require('mongoose');
 
 const ProblemSchema = new Schema({
 
+    title: {
+        type: "String",
+        required: true
+    },
     level: {
-        type: String,
+        type: Number, min: 1, max: 10,
         required: true
     },
     description: {
@@ -15,16 +19,8 @@ const ProblemSchema = new Schema({
         email: {type: String}
     },
     photo: {type: String},
-    samples: [
-        {
-            input: {type: String},
-            output: {type: String}
-        },
-        {
-            input: {type: String},
-            output: {type: String}
-        }
-    ]
+    samples: {type: Array, required: true}
+
 }, {
     timestamps: true,
     collection: "Problems"
