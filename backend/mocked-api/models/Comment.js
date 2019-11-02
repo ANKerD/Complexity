@@ -12,8 +12,8 @@ const CommentSchema = new Schema({
         type: String,
         required: [true, "A comment must have a body"],
         trim: true,
-        minLength: 1,
-        maxLength: 250
+        minlength: 1,
+        maxlength: 250
     }
 },{
     timestamps: true,

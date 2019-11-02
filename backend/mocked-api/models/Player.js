@@ -26,7 +26,7 @@ const PlayerSchema = new Schema({
         type: String,
         required: [true, "Password can't be blank"],
         select: false,
-        minLength: 5,
+        minlength: 5,
     },
     tokens: [{
         token: {
