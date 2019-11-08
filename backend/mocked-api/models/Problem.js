@@ -4,6 +4,11 @@ const ProblemSchema = new Schema({
 
     title: {
         type: "String",
+        required: true,
+        unique: true
+    },
+    type_question:{
+        type: "String",
         required: true
     },
     level: {
@@ -14,15 +19,21 @@ const ProblemSchema = new Schema({
         type: String,
         required: true
     },
-    author: {
-        nick: {type: String},
-        email: {type: String}
+    author_description: {
+        type: String,
+        required: true
     },
     photo: {type: String},
     samples: [
         {
-            "input": {type: String, required: true},
-            "output": {type: String, required: true}
+            input: {type: String, required: true},
+            output: {type: String, required: true}
+        }
+    ],
+    case_testes: [
+        {
+            input: {type: String, required: true},
+            output: {type: String, required: true}
         }
     ]
 

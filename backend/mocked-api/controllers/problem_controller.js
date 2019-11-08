@@ -2,46 +2,53 @@ const Problem = require("../models/Problem");
 const httpStatusCode = require('../constants/http-status-code.json');
 
 module.exports.registerProblem = async (req, res) =>{
-    const {title} = req.body.problem;
-    p = await Problem.findOne({title});
-    if(p === null){
-        try{
-            const problem = new Problem(req.body.problem);
-            await problem.save();
-            return res.status(httpStatusCode.CREATED).send(problem);
+    try{
+        const problem = new Problem(req.body.problem);
+        await problem.save();
+        return res.status(httpStatusCode.CREATED).send(problem);
         }catch(error){
             return res.status(httpStatusCode.BAD_REQUEST).send({error: "error registering problem"});
         }
-    }else{
-        res.status(httpStatusCode.BAD_REQUEST).send({error: "Problem with that name already exists"});
-    }
 }
 
-module.exports.findProblemsByLevel = async (req, res) =>{
-    const level = req.params.level;
+module.exports.findProblemById = async (req, res) =>{
+    const _id = req.params._id;
     try{
-        const problems = await Problem.find({level});
-    
+        const problems = await Problem.findOne({_id});    
         return res.status(httpStatusCode.OK).send({
             results: problems,
             message: `${problems.length} results found`
         });
     }catch(err){
-        return res.status(httpStatusCode.NOT_FOUND).send({error: "Not Found"});
+        return res.status(httpStatusCode.NOT_FOUND).send({error: "Problem Not Found"});
     }
-}   
+}
 
-module.exports.findProblems = async (req, res) =>{
-    const problems = await Problem.find();
-    
+module.exports.findOthers = async (req, res) =>{
+    const level = req.query.level;
+    const pattern = req.query.pattern;
+    const order = req.query.order;
+    let problems;
+    if(level !== undefined){
+        problems = await Problem.find({level});
+    }
+    else if(pattern !== undefined){
+        problems = await Problem.find({"title": {$regex: `(?i).*${pattern}.*`}});
+    }
+    else if(order !== undefined){
+        problems = await findProblemsInOrder(order);
+    }
+    else{
+        problems = await Problem.find();
+    }
     return res.status(httpStatusCode.OK).send({
         results: problems,
         message: `${problems.length} results found`
     });
-}
 
-module.exports.findProblemsInOrder = async (req, res) =>{
-    const order = req.params.order;
+} 
+   
+async function findProblemsInOrder(order){
     const problems = await Problem.find();
     if(order === "down"){
         problems.sort(function(a,b) {
@@ -52,19 +59,6 @@ module.exports.findProblemsInOrder = async (req, res) =>{
             return a.level < b.level ? -1 : a.level > b.level ? 1 : 0;
         });
     }
-    
-    return res.status(httpStatusCode.OK).send({
-        results: problems,
-        message: `${problems.length} results found`
-    });
+    return problems;
 }
 
-module.exports.findProblemsBySubstring = async (req, res) => {
-    const pattern = req.params.pattern;
-    const result = await Problem.find({"title": {$regex: `(?i).*${pattern}.*`}});
-
-    res.status(httpStatusCode.OK).send({
-        results: result,
-        message: `${result.length} results found`
-    });
-}

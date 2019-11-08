@@ -5,11 +5,9 @@ const problemController = require("../controllers/problem_controller");
 const router = Router();
 
 const routes = () =>{
-    router.post('/registerproblem', problemController.registerProblem);
-    router.get('/findproblems/:level', problemController.findProblemsByLevel);
-    router.get('/findproblems', problemController.findProblems);
-    router.get('/findproblemsubstring/:pattern', problemController.findProblemsBySubstring);
-    router.get('/findproblemsorder/:order', problemController.findProblemsInOrder);
+    router.post('/register', problemController.registerProblem);
+    router.get('/find/:_id', problemController.findProblemById);
+    router.get('/find/:level?:pattern?:order?', problemController.findOthers);
 
     return router;
 }
