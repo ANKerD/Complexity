@@ -30,7 +30,7 @@ const ProblemSchema = new Schema({
             output: {type: String, required: true}
         }
     ],
-    case_testes: [
+    test_cases: [
         {
             input: {type: String, required: true},
             output: {type: String, required: true}

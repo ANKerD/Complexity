@@ -7,6 +7,7 @@ module.exports.registerProblem = async (req, res) =>{
         await problem.save();
         return res.status(httpStatusCode.CREATED).send(problem);
         }catch(error){
+            console.log(error);
             return res.status(httpStatusCode.BAD_REQUEST).send({error: "error registering problem"});
         }
 }
@@ -28,9 +29,13 @@ module.exports.findOthers = async (req, res) =>{
     const level = req.query.level;
     const pattern = req.query.pattern;
     const order = req.query.order;
+    const type_question = req.query.type_question;
     let problems;
     if(level !== undefined){
         problems = await Problem.find({level});
+    }
+    else if(type_question !== undefined){
+        problems = await Problem.find({type_question});
     }
     else if(pattern !== undefined){
         problems = await Problem.find({"title": {$regex: `(?i).*${pattern}.*`}});
