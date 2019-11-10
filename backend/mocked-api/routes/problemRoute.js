@@ -1,13 +1,14 @@
 const { Router } = require("express");
 
 const problemController = require("../controllers/problem_controller");
+const auth = require("../middleware/auth");
 
 const router = Router();
 
 const routes = () =>{
-    router.post('/register', problemController.registerProblem);
-    router.get('/find/:_id', problemController.findProblemById);
-    router.get('/find?:level?:pattern?:order?:type_question?', problemController.findOthers);
+    router.post('/', auth, problemController.registerProblem);
+    router.get('/:_id', problemController.findProblemById);
+    router.get('/?:level?:pattern?:order?:type_question?', problemController.findOthers);
 
     return router;
 }

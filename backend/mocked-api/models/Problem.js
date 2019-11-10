@@ -7,10 +7,7 @@ const ProblemSchema = new Schema({
         required: true,
         unique: true
     },
-    type_question:{
-        type: "String",
-        required: true
-    },
+    type_question:[],
     level: {
         type: Number, min: 1, max: 10,
         required: true
@@ -19,7 +16,7 @@ const ProblemSchema = new Schema({
         type: String,
         required: true
     },
-    author_description: {
+    author: {
         type: String,
         required: true
     },
