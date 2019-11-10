@@ -53,11 +53,15 @@ module.exports.findOthers = async (req, res) =>{
 function findProblemsInOrder(order, problems){
     if(order === "down"){
         problems.sort(function(a,b) {
-            return a.level > b.level ? -1 : a.level < b.level ? 1 : 0;
+            if(a.level > b.level) return -1;
+            else if(a.level < b.level) return 1;
+            else 0;
         });    
     }else{
         problems.sort(function(a,b) {
-            return a.level < b.level ? -1 : a.level > b.level ? 1 : 0;
+            if(a.level < b.level) return -1;
+            else if(a.level > b.level) return 1;
+            else 0;
         });
     }
     return problems;
