@@ -25,8 +25,9 @@ CommentSchema.methods.show = async function(){
     const player = await Player.findOne({_id:this._authorId});
     const nick = player.toProfile().profile.nick;
     const body = this.body;
+    const id = this._id;
 
-    return {nick,body};
+    return {id,nick,body};
 }
 
 const Comment = model('Comment', CommentSchema);
