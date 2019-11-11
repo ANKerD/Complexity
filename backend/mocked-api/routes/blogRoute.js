@@ -16,7 +16,7 @@ const routes = () => {
     router.get("/sort/likes", auth, blogController.sortByLikes);
     router.get("/search/title/:pattern", auth, blogController.searchTitle);
     router.get("/search/body/:pattern", auth, blogController.searchBody);
-    router.get("/search/author/:authorId", auth, blogController.searchAuthor);
+    router.get("/search/author/:nick", auth, blogController.searchAuthor);
 
   return router;
 };
