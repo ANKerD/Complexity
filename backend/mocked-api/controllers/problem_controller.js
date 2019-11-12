@@ -41,7 +41,10 @@ module.exports.findOthers = async (req, res) =>{
         problems = _.filter(problems, p => p.type_question.includes(type_question));
     }
     if(order !== undefined){
-        problems = findProblemsInOrder(order, problems);
+        if(order == "invert")
+            problems = sort(true, problems);
+        else 
+            sort(false, problems);
     }
     return res.status(httpStatusCode.OK).send({
         results: problems,
@@ -50,8 +53,8 @@ module.exports.findOthers = async (req, res) =>{
 
 } 
    
-function findProblemsInOrder(order, problems){
-    if(order === "down"){
+function sort(invert, problems){
+    if(invert){
         problems.sort(function(a,b) {
             if(a.level > b.level) return -1;
             else if(a.level < b.level) return 1;

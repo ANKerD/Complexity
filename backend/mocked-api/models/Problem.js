@@ -7,7 +7,7 @@ const ProblemSchema = new Schema({
         required: true,
         unique: true
     },
-    type_question:[],
+    tags:[],
     level: {
         type: Number, min: 1, max: 10,
         required: true

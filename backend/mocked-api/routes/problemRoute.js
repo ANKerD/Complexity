@@ -8,7 +8,7 @@ const router = Router();
 const routes = () =>{
     router.post('/', auth, problemController.registerProblem);
     router.get('/:_id', problemController.findProblemById);
-    router.get('/?:level?:pattern?:order?:type_question?', problemController.findOthers);
+    router.get('/', problemController.findOthers);
 
     return router;
 }
