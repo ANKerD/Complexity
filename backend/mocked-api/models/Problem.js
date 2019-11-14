@@ -16,11 +16,9 @@ const ProblemSchema = new Schema({
         type: String,
         required: true
     },
-    author: {
-        type: String,
-        required: true
-    },
-    photo: {type: String},
+    author: String,
+    info: String, // for misc informtion about the problem
+    photo: String,
     samples: [
         {
             input: {type: String, required: true},
