@@ -2,7 +2,7 @@ const Problem = require("../models/Problem");
 const httpStatusCode = require('../constants/http-status-code.json');
 const _ = require('lodash');
 
-module.exports.registerProblem = async (req, res) => {
+module.exports.register = async (req, res) => {
     try {
         const problem = new Problem(req.body.problem);
         console.log(problem);
@@ -14,7 +14,7 @@ module.exports.registerProblem = async (req, res) => {
         }
 }
 
-module.exports.findProblemById = async (req, res) => {
+module.exports.findById = async (req, res) => {
     const _id = req.params._id;
     try {
         const problem = await Problem.findOne({_id}); 
