@@ -36,7 +36,7 @@ module.exports.findById = async (req, res) => {
 module.exports.find = async (req, res) => {
   const { level, pattern, order } = req.query;
   let { tags } = req.query;
-  tags = JSON.parse(tags);
+  if (tags) tags = JSON.parse(tags);
 
   let problems;
   if (pattern) {
@@ -60,7 +60,6 @@ module.exports.find = async (req, res) => {
   }
 
   return res.status(httpStatusCode.OK).send({
-    results: problems,
-    message: `${problems.length} results found`
+    results: problems
   });
 };
