@@ -9,8 +9,8 @@ const BlogSchema = new Schema({
         type: String,
         required: [true, "Title cannot be empty"],
         trim: true,
-        minLength: 5,
-        maxLength: 200
+        minlength: 5,
+        maxlength: 200
     },
     _authorId: {
         type: ObjectId,
@@ -21,8 +21,8 @@ const BlogSchema = new Schema({
         type: String,
         required: [true, "A blog must have a body"],
         trim: true,
-        minLength: 5,
-        maxLength: 5000
+        minlength: 5,
+        maxlength: 5000
     },
     likes: {
         type: [ObjectId],

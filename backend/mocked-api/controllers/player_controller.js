@@ -14,6 +14,8 @@ const user_exists_msg = "User already exists";
 const user_not_found_msg = "User not found";
 const invalid_field_msg = "Please provide a valid username and password.";
 const invalid_password_msg = "Please provide a valid password";
+const registration_failed_msg = "Registration failed";
+const dual_identifiers_error = "Send nick or email, not both";
 
 const router = Router();
 
@@ -44,7 +46,7 @@ module.exports.signup = async (req, res) =>{
 			return res.status(201).send({ player, token })
 		} catch (error) {
 			console.error(error);
-			return res.status(httpStatusCode.BAD_REQUEST).send({msg: "Registration failed", error});
+			return res.status(httpStatusCode.BAD_REQUEST).send({error: `${registration_failed_msg} due to ${error}`});
 		}
 	} else {
 		res.status(httpStatusCode.BAD_REQUEST).send({ error: user_exists_msg}).end();
@@ -57,7 +59,7 @@ module.exports.login = async (req, res) => {
 
 	if(email && nick){
 		console.log("Send nick or email");
-		return res.status(400).send({error: "Send nick or email"});
+		return res.status(400).send({error: dual_identifiers_error});
 	}
 
 	try {
@@ -70,9 +72,10 @@ module.exports.login = async (req, res) => {
 		if(!player)
 			return res.status(400).send({ error: user_not_found_msg});
 		const token = await player.generateAuthToken();
-		return res.send({token});
+		return res.send({token, nick});
 	} catch (error) {
-        res.status(400).send({error})
+        console.log(error);
+        res.status(400).send({error});
     }
 }
 
@@ -245,13 +248,13 @@ module.exports.forgetPassword = async (req, res) =>{
 		const {email} = req.body.player;
 		const player = await Player.findOne({ email });
 		if(!player)
-			return res.status(404).send({user_not_found_msg});
+			return res.status(404).send({error: user_not_found_msg});
 		const {nick} = player;
 		const new_password =  await player.generateNewPassword();
 		emailT.send(mailer.forgetPass(email, nick, new_password));
-		return res.status(200).send({message: 'new password sent to email'});
+		return res.status(200).send({msg: 'new password sent to email'});
 	} catch(e) {
 		return res.status(500).send(e).end();
 	}
-	
+
 }
