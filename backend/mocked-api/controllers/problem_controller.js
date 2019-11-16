@@ -1,6 +1,9 @@
 const Problem = require("../models/Problem");
+const Submission = require("../models/Submission");
 const httpStatusCode = require("../constants/http-status-code.json");
+const fetch = require("fetch");
 const _ = require("lodash");
+const apiAdress = "";
 
 module.exports.register = async (req, res) => {
   try {
@@ -62,4 +65,33 @@ module.exports.find = async (req, res) => {
   return res.status(httpStatusCode.OK).send({
     results: problems
   });
+};
+
+// Adicionar o problema submetido à lista de problemas submetidos do player
+// Pensar em uma forma de atualizar os problemas resolvidos de um player
+module.exports.submit = async (req,res) => {
+  const problemId = req.params._id
+  const {lang, code} = req.body;
+  const
+  const body = JSON.stringify({script:code});
+  const init = {
+    method = "POST",
+    body = body,
+    headers = {"Content-type": "application/json; charset=UTF-8"}
+  };
+
+  try{
+    const response = await fetch(apiAdress + `/problems/${problemId}`, init);
+
+    if (response.ok){
+      const data = await response.json();
+
+      res.status(httpStatusCode.OK).send(data);
+    } else {
+      res.status(httpStatusCode.BAD_REQUEST);
+    }
+
+  } catch (error) {
+    res.status(httpStatusCode.BAD_REQUEST).send({error});
+  }
 };

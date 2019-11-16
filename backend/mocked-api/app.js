@@ -10,7 +10,7 @@ const config = require("./config");
 
 const playerRoute = require("./routes/playerRoute");
 const problemRoute = require("./routes/problemRoute");
-const submissionsRoute = require("./routes/submission");
+const submissionsRoute = require("./routes/submissionRoute");
 const blogRoute = require("./routes/blogRoute");
 
 const app = express();
