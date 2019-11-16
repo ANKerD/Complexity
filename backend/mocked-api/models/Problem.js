@@ -8,6 +8,10 @@ const ProblemSchema = new Schema(
       unique: true
     },
     tags: [String],
+    xp: {
+      type: Number,
+      required: true
+    },
     level: {
       type: Number,
       min: 1,
