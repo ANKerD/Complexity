@@ -31,13 +31,14 @@ SubmissionSchema.methods.show = async function() {
     problem = await Problem.findOne({_id:this.problem_id});
 
     return {
+        sid: this._id
         pid: this.problem_id,
         name: problem.title,
         state: this.state,
         result: this.result,
         language: this.language,
-        date: this.timestamps
-    };
+        date: this.createdAt
+    }
 }
 
 const Submission = model("Submission", SubmissionSchema);
