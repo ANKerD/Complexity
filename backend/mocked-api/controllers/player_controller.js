@@ -89,7 +89,7 @@ module.exports.profile = async (req, res) => {
 	
 	const profile = otherPlayer.toProfile()
 	if(player != undefined){
-		const verification = _.includes(player.friends, otherPlayer.id);
+		const verification = _.includes(player.friends, otherPlayer.nick);
 		return res.status(200).send({
 			myFriend: verification,
 			profile: profile
