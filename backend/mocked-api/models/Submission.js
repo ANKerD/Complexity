@@ -27,9 +27,6 @@ const SubmissionSchema = new Schema(
   }
 );
 
-const Submission = model("Submission", SubmissionSchema);
-module.exports = Submission;
-
 SubmissionSchema.methods.show = async function() {
     problem = await Problem.findOne({_id:this.problem_id});
 
@@ -42,3 +39,6 @@ SubmissionSchema.methods.show = async function() {
         date: this.timestamps
     };
 }
+
+const Submission = model("Submission", SubmissionSchema);
+module.exports = Submission;
