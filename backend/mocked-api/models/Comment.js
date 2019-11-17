@@ -1,6 +1,7 @@
 const {Schema, model} = require("mongoose");
 const validator = require("validator");
 const ObjectId = Schema.Types.ObjectId;
+const Player = require("../models/Player");
 
 const CommentSchema = new Schema({
     _authorId: {
@@ -19,6 +20,15 @@ const CommentSchema = new Schema({
     timestamps: true,
     collection: "Comments"
 });
+
+CommentSchema.methods.show = async function(){
+    const player = await Player.findOne({_id:this._authorId});
+    const nick = player.toProfile().profile.nick;
+    const body = this.body;
+    const id = this._id;
+
+    return {id,nick,body};
+}
 
 const Comment = model('Comment', CommentSchema);
 module.exports = {

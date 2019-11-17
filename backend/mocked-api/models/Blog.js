@@ -38,20 +38,26 @@ const BlogSchema = new Schema({
     collection: "Blogs"
 });
 
-BlogSchema.statics.findByAuthorID = async function(_id) {
-    const player = await Player.find({_id});
+BlogSchema.statics.findByAuthor = async function(nick) {
+    const player = await Player.findOne({nick});
 
     if (!player) {
-        throw new Error({error: "Invalid player id"})
+        throw new Error({error: "Invalid player nickname"})
     }
 
-    const query = await Blog.find({_authorId:_id});
+    const query = await Blog.find({_authorId:player._id});
     const result = await asyncMapShow(query);
     return result;
 };
 
 const asyncMapShow = async function(list) {
     return await Promise.all(list.map(async elem => {return elem.show()}))
+}
+
+const asyncMapToProfile = async function(list) {
+    playerList = await Promise.all(list.map(async id => {return Player.findOne({_id:id})}))
+
+    return playerList.map(player => {return player.toProfile().profile.nick})
 }
 
 BlogSchema.statics.sortByCreationTime = async function() {
@@ -110,14 +116,15 @@ BlogSchema.methods.show = async function() {
     const profile = player.toProfile();
     return {
         blog: {
+            id: this._id,
             author: profile,
             title: this.title,
             content: this.body,
-            comments: this.comments,
+            comments: await asyncMapShow(this.comments),
             numlikes: this.likes.length,
             numdislikes: this.dislikes.length,
-            likes: this.likes,
-            dislikes: this.dislikes
+            likes: await asyncMapToProfile(this.likes),
+            dislikes: await asyncMapToProfile(this.dislikes)
         }
     };
 };

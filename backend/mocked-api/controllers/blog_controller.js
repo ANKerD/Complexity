@@ -28,7 +28,7 @@ module.exports.createBlog = async (req,res) => {
     const blog = new Blog(newBlog);
     await blog.save();
 
-    res.status(httpStatusCode.OK).send({msg: "Blog created"});
+    res.status(httpStatusCode.OK).send({msg: "Blog created", blogId: blog._id});
 };
 
 module.exports.like = async (req, res) => {
@@ -107,13 +107,13 @@ module.exports.removeComment = async (req,res) => {
 module.exports.sortByTime =  async(req,res) => {
     const result = await Blog.sortByCreationTime();
 
-    res.status(httpStatusCode.OK).send(result);
+    res.status(httpStatusCode.OK).send({query:result});
 };
 
 module.exports.sortByLikes = async(req,res) => {
     const result = await Blog.sortByLikes();
 
-    res.status(httpStatusCode.OK).send({result});
+    res.status(httpStatusCode.OK).send({query:result});
 };
 
 module.exports.searchTitle = async(req,res) => {
@@ -131,8 +131,8 @@ module.exports.searchBody = async(req,res) => {
 };
 
 module.exports.searchAuthor = async(req,res) => {
-    const authorId = req.params.authorId;
-    const result = await Blog.findByAuthorID(authorId);
+    const authorNick = req.params.nick;
+    const result = await Blog.findByAuthor(authorNick);
 
     res.status(httpStatusCode.OK).send({query:result});
 };
