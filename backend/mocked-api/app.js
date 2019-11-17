@@ -12,6 +12,7 @@ const playerRoute = require("./routes/playerRoute");
 const problemRoute = require("./routes/problemRoute");
 const submissionsRoute = require("./routes/submission");
 const blogRoute = require("./routes/blogRoute");
+const rankingRoute = require("./routes/rankingRoute");
 
 const app = express();
 const port = config.port;
@@ -61,6 +62,7 @@ app.use("/player", playerRoute());
 app.use("/problem", problemRoute());
 app.use("/submission", submissionsRoute());
 app.use("/blog", blogRoute());
+app.use("/ranking", rankingRoute());
 
 app.get("/", (req, res) => {
   res.send("TODO: swagger docs");
