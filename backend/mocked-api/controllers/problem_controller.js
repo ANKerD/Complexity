@@ -60,7 +60,7 @@ module.exports.find = async (req, res) => {
     problems = _.orderBy(problems, ["level"], order);
   }
 
-  problems = problems.map((elem) => elem.show());
+  problems = problems.map(elem => elem.show());
 
   return res.status(httpStatusCode.OK).send({
     results: problems
