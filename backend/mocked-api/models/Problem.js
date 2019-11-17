@@ -41,8 +41,8 @@ const ProblemSchema = new Schema(
 );
 
 ProblemSchema.methods.show = function() {
-  const {title,tags,level,description,author,info,photo,samples,timestamps} = this;
-  return {title,tags,level,description,author,info,photo,samples,timestamps};
+  const {_id,title,tags,level,description,author,info,photo,samples,createdAt,updatedAt} = this;
+  return {_id,title,tags,level,description,author,info,photo,samples,createdAt,updatedAt};
 }
 
 const Problem = model("Problem", ProblemSchema);
