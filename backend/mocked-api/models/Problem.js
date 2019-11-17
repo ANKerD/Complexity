@@ -42,3 +42,9 @@ const ProblemSchema = new Schema(
 
 const Problem = model("Problem", ProblemSchema);
 module.exports = Problem;
+
+ProblemSchema.methods.show = function() {
+  const {title,tags,level,description,author,info,photo,samples,timestamps} = this;
+  return {title,tags,level,description,author,info,photo,samples,timestamps};
+}
+

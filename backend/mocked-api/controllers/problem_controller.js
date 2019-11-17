@@ -20,8 +20,9 @@ module.exports.findById = async (req, res) => {
   const _id = req.params._id;
   try {
     const problem = await Problem.findOne({ _id });
+    const result = await problem.show();
     console.log(problem);
-    return res.status(httpStatusCode.OK).send({ problem });
+    return res.status(httpStatusCode.OK).send({result});
   } catch (err) {
     return res
       .status(httpStatusCode.NOT_FOUND)
@@ -58,6 +59,8 @@ module.exports.find = async (req, res) => {
   if (order && ["asc", "desc"].includes(order)) {
     problems = _.orderBy(problems, ["level"], order);
   }
+
+  problems = problems.map((elem) => elem.show());
 
   return res.status(httpStatusCode.OK).send({
     results: problems
