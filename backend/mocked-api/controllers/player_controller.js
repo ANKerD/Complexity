@@ -83,16 +83,20 @@ module.exports.profile = async (req, res) => {
 	const player = req.player;
 	const nick = req.params.nick;
 	const otherPlayer = await Player.findOne({ nick });
-
+	
 	if(!otherPlayer)
 		return res.status(400).send({ error: user_not_found_msg});
 	
-	const verification = _.includes(player.friends, otherPlayer.id);
 	const profile = otherPlayer.toProfile()
-	res.status(200).send({
-		myFriend: verification,
-		profile: profile
-	});
+	if(player != undefined){
+		const verification = _.includes(player.friends, otherPlayer.id);
+		return res.status(200).send({
+			myFriend: verification,
+			profile: profile
+		});
+	}
+	return res.status(200).send(profile);
+
 }
 
 module.exports.myProfile = async (req, res) => {
