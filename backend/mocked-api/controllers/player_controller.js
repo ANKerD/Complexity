@@ -54,7 +54,7 @@ module.exports.signup = async (req, res) =>{
 }
 
 module.exports.login = async (req, res) => {
-	const { email, nick, password } = req.body.player;
+	let { email, nick, password } = req.body.player;
 	var player = undefined;
 
 	if(email && nick){
@@ -65,6 +65,7 @@ module.exports.login = async (req, res) => {
 	try {
 		if(email){
 			player = await Player.findByEmailAndPassword(email, password);
+			nick = player.nick;
 		} else if (nick) {
 			player = await Player.findByNickAndPassword(nick, password);
 		}
