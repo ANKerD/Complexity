@@ -5,7 +5,7 @@ const router = Router();
 
 const routes = ()=>{
 
-    router.get('/:type', ranking_controller.listRanking);
+    router.get('', ranking_controller.listRanking);
     return router;
 }
 

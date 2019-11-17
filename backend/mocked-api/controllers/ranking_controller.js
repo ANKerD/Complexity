@@ -3,13 +3,16 @@ const Player = require('../models/Player');
 const _ = require("lodash");
 
 module.exports.listRanking = async (req, res) => {
-    const type = req.params.type;
+    let {param, order} = req.query;
     let ranking = await Player.find();
-    if(type == "problemssolved")
-        ranking = _.orderBy(ranking, (user)=> {return _.size(user.problemsSolved)}, "desc");
+    let profiles = _.forEach(ranking, (p) => {return p.toProfile()});
+    if(order != "asc")
+        order = "desc";
+    if(param == "solved")
+        profiles = _.orderBy(profiles, (user)=> {return _.size(user.problemsSolved)}, order);
     else
-        ranking = _.orderBy(ranking, ["xp"], "desc");
+        profiles = _.orderBy(profiles, ["xp"], order);
     return res.status(httpStatusCode.OK).send({
-        results: ranking
+        results: profiles
     });
 }
