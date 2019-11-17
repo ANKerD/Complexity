@@ -56,8 +56,7 @@ const PlayerSchema = new Schema({
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const checkSubmission = async function( problemId, submissionId, ms) {
-
+const checkSubmission = async function(submissionId, ms) {
   const init = {
     method = "GET"
   };
@@ -70,11 +69,11 @@ const checkSubmission = async function( problemId, submissionId, ms) {
 
       if (data.result === ""){
         await wait(ms);
-        await checkSubmission(problemId, submissionId, ms);
+        await checkSubmission(submissionId, ms);
       }
 
       if (data.result === "AC") {
-        this.addSolvedProblem(problemId);
+        this.addSolvedProblem(submissionId);
         this.save()
       }
     }
@@ -83,14 +82,18 @@ const checkSubmission = async function( problemId, submissionId, ms) {
   }
 }
 
-PlayerSchema.methods.addSolvedProblem = function(problemId){
-    uniqueProblemsSolved = [...new Set(this.problemsSolved.concat(problemId))];
+const asyncMapShow = async function(list) {
+    return await Promise.all(list.map(async elem => {return elem.show()}))
+}
+
+PlayerSchema.methods.addSolvedProblem = function(submissionId){
+    uniqueProblemsSolved = [...new Set(this.problemsSolved.concat(submissionId))];
     this.problemsSolved = uniqueProblemsSolved;
 }
 
-PlayerSchema.methods.addSubmittedProblem =  async function(problemId, submissionId) {
-    this.problemsSubmitted = [...new Set(this.problemsSubmitted.concat(problemId))]
-    checkSubmission(problemId, submissionId, 500);
+PlayerSchema.methods.addSubmittedProblem =  async function(submissionId) {
+    this.problemsSubmitted = [...new Set(this.problemsSubmitted.concat(submissionId))]
+    checkSubmission(submissionId, 500);
 };
 
 PlayerSchema.pre('save', async function (next) {
@@ -158,8 +161,8 @@ PlayerSchema.methods.toProfile = function(){
         photo: this.photo,
         nick: this.nick,
         level: this.level,
-        problemsSubmitted: this.problemsSubmitted,
-        problemsSolved: this.problemsSolved,
+        problemsSubmitted: await asyncMapShow(this.problemsSubmitted),
+        problemsSolved: await asyncMapShow(this.problemsSolved),
         submissions: this.submissions,
         teams: this.teams,
         contests: this.contests,

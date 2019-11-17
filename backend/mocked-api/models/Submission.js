@@ -1,10 +1,25 @@
 const { Schema, model } = require("mongoose");
+const Problem = require("../models/Problem");
+const ObjectId = Schema.Types.ObjectId;
 
 const SubmissionSchema = new Schema(
   {
-    problem_id: String,
-    state: String,
-    result: String
+    problem_id: {
+        type: ObjectId,
+        ref: "Problem"
+    },
+    state: {
+        type: String,
+        enum: ["SUBMITTED","FINISHED"]
+    },
+    result: {
+        type: String,
+        enum: ["AC", "WA", "TLE", "MLE", "RE"]
+    },
+    language: {
+        type: String,
+        enum: ["PY", "C++"]
+    }
   },
   {
     timestamps: true,
@@ -14,3 +29,16 @@ const SubmissionSchema = new Schema(
 
 const Submission = model("Submission", SubmissionSchema);
 module.exports = Submission;
+
+SubmissionSchema.methods.show = async function() {
+    problem = await Problem.findOne({_id:this.problem_id});
+
+    return {
+        pid: this.problem_id,
+        name: problem.title,
+        state: this.state,
+        result: this.result,
+        language: this.language,
+        date: this.timestamps
+    };
+}
