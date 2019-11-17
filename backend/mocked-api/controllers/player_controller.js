@@ -208,6 +208,13 @@ module.exports.searchPlayerBySubstring = async (req,res) => {
 	});
 };
 
+module.exports.myFriend = async (req, res) => {
+	const player = req.player;
+	const friend = req.params.friend;
+	const verification = _.includes(player.friends, friend);
+	res.status(200).send({ verification });
+}
+
 /*
 * At least 5 characters
 * Alphanumerics & Underscore

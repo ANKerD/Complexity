@@ -117,6 +117,7 @@ PlayerSchema.methods.toProfile = function(){
         photo: this.photo,
         nick: this.nick,
         level: this.level,
+        coins: this.coins,
         problemsSubmitted: this.problemsSubmitted,
         problemsSolved: this.problemsSolved,
         submissions: this.submissions,

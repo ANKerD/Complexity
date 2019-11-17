@@ -17,6 +17,7 @@ const routes = () => {
   router.post('/me/image', auth, playerController.imageUpload);
   router.post('/me/password', auth, playerController.changePassword);
   router.get('/:nick', playerController.profile);
+  router.get('/me/friend', auth, playerController.myFriend);
   router.post('/friend', auth, playerController.addFriend);
   router.delete('/friend', auth, playerController.removeFriend);
   router.get('/search/:pattern', auth, playerController.searchPlayerBySubstring);
