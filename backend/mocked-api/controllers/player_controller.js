@@ -159,6 +159,10 @@ module.exports.addFriend = async (req, res) => {
 	const player = req.player;
 	const friend = req.body.friend;
 
+	const exist = await Player.findOne({nick:friend});
+	if(exist == undefined){
+		return res.status(404).send({error: "Player not found"});
+	}
 	player.friends.push(friend);
 	player.friends = _.uniq(player.friends);
 
