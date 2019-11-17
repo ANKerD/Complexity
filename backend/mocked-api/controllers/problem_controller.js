@@ -20,7 +20,7 @@ module.exports.findById = async (req, res) => {
   const _id = req.params._id;
   try {
     const problem = await Problem.findOne({ _id });
-    const result = await problem.show();
+    const result = problem.show();
     console.log(problem);
     return res.status(httpStatusCode.OK).send({result});
   } catch (err) {
