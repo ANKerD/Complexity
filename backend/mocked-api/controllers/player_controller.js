@@ -80,13 +80,19 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.profile = async (req, res) => {
+	const player = req.player;
 	const nick = req.params.nick;
-	const player = await Player.findOne({ nick });
+	const otherPlayer = await Player.findOne({ nick });
 
-	if(!player)
+	if(!otherPlayer)
 		return res.status(400).send({ error: user_not_found_msg});
-
-	res.send(player.toProfile());
+	
+	const verification = _.includes(player.friends, otherPlayer.id);
+	const profile = otherPlayer.toProfile()
+	res.status(200).send({
+		myFriend: verification,
+		profile: profile
+	});
 }
 
 module.exports.myProfile = async (req, res) => {
@@ -207,13 +213,6 @@ module.exports.searchPlayerBySubstring = async (req,res) => {
 		message: `${result.length} results found`
 	});
 };
-
-module.exports.myFriend = async (req, res) => {
-	const player = req.player;
-	const friend = req.params.friend;
-	const verification = _.includes(player.friends, friend);
-	res.status(200).send({ verification });
-}
 
 /*
 * At least 5 characters
