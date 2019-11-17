@@ -1,9 +1,10 @@
 const Problem = require("../models/Problem");
 const Submission = require("../models/Submission");
+const config = require("../config");
 const httpStatusCode = require("../constants/http-status-code.json");
 const _ = require("lodash");
 const fetch = require("fetch");
-const apiAdress = "";
+const apiAdress = config.apiAdress;
 
 module.exports.checkSubmission = async (req,res) => {
   const {submissionId} = req.body;

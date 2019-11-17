@@ -1,9 +1,10 @@
 const Problem = require("../models/Problem");
 const Submission = require("../models/Submission");
+const config = require("../config");
 const httpStatusCode = require("../constants/http-status-code.json");
 const fetch = require("fetch");
 const _ = require("lodash");
-const apiAdress = "";
+const apiAdress = config.apiAdress;
 
 module.exports.register = async (req, res) => {
   try {
@@ -67,10 +68,9 @@ module.exports.find = async (req, res) => {
   });
 };
 
-// Adicionar o problema submetido à lista de problemas submetidos do player
-// Pensar em uma forma de atualizar os problemas resolvidos de um player
 module.exports.submit = async (req,res) => {
-  const problemId = req.params._id
+  const problemId = req.params._id;
+  const player = req.player;
   const {lang, code} = req.body;
   const
   const body = JSON.stringify({script:code});
@@ -85,8 +85,9 @@ module.exports.submit = async (req,res) => {
 
     if (response.ok){
       const data = await response.json();
-
+      player.addSubmittedProblem(problemId, data.submission_id)
       res.status(httpStatusCode.OK).send(data);
+
     } else {
       res.status(httpStatusCode.BAD_REQUEST);
     }

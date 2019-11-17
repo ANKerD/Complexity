@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../config');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const apiAdress = config.apiAdress;
 
 const PlayerSchema = new Schema({
     email: {
@@ -53,6 +54,45 @@ const PlayerSchema = new Schema({
     collection: "Players"
 });
 
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const checkSubmission = async function( problemId, submissionId, ms) {
+
+  const init = {
+    method = "GET"
+  };
+
+  try{
+    const response = await fetch(apiAdress + `submissions/${submissionId}`, init);
+
+    if (response.ok){
+      const data = await response.json();
+
+      if (data.result === ""){
+        await wait(ms);
+        await checkSubmission(problemId, submissionId, ms);
+      }
+
+      if (data.result === "AC") {
+        this.addSolvedProblem(problemId);
+        this.save()
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+PlayerSchema.methods.addSolvedProblem = function(problemId){
+    uniqueProblemsSolved = [...new Set(this.problemsSolved.concat(problemId))];
+    this.problemsSolved = uniqueProblemsSolved;
+}
+
+PlayerSchema.methods.addSubmittedProblem =  async function(problemId, submissionId) {
+    this.problemsSubmitted = [...new Set(this.problemsSubmitted.concat(problemId))]
+    checkSubmission(problemId, submissionId, 500);
+};
+
 PlayerSchema.pre('save', async function (next) {
     // Hash the password before saving the user model
     const player = this
@@ -60,7 +100,8 @@ PlayerSchema.pre('save', async function (next) {
         player.password = await bcrypt.hash(player.password, 8)
     }
     next()
-})
+});
+
 
 PlayerSchema.methods.generateNewPassword = async function() {
     const player = this;

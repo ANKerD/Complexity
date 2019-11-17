@@ -6,7 +6,8 @@ const config = {
     cloud_name: process.env.CLOUDINARY_CLOUDNAME || 'duqthzynh',
     api_key: process.env.CLOUDINARY_APIKEY || '263833975991679',
     api_secret: process.env.CLOUDINARY_APISECRET || '9lFrHKDQcfL-eHdRj4bvjLmsz00',
-  }
+  },
+  apiAdress = ""
 }
 
 if (process.env.SUPPORTED_LANGS) {
