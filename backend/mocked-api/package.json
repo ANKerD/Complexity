@@ -28,6 +28,8 @@
     "validator": "^11.1.0"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "swagger": "^0.7.5",
+    "swagger-editor": "^3.7.0"
   }
 }
