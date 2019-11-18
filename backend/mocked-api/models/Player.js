@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../config');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const fetch = require('node-fetch');
 const apiAdress = config.apiAdress;
 
 const PlayerSchema = new Schema({
@@ -58,11 +59,11 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const checkSubmission = async function(submissionId, ms) {
   const init = {
-    method = "GET"
+    method : "GET"
   };
 
   try{
-    const response = await fetch(apiAdress + `submissions/${submissionId}`, init);
+    const response = await fetch(apiAdress + `/submissions/${submissionId}`, init);
 
     if (response.ok){
       const data = await response.json();
@@ -161,8 +162,8 @@ PlayerSchema.methods.toProfile = function(){
         photo: this.photo,
         nick: this.nick,
         level: this.level,
-        problemsSubmitted: await asyncMapShow(this.problemsSubmitted),
-        problemsSolved: await asyncMapShow(this.problemsSolved),
+        problemsSubmitted: asyncMapShow(this.problemsSubmitted),
+        problemsSolved: asyncMapShow(this.problemsSolved),
         submissions: this.submissions,
         teams: this.teams,
         contests: this.contests,

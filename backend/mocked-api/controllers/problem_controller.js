@@ -2,7 +2,7 @@ const Problem = require("../models/Problem");
 const Submission = require("../models/Submission");
 const config = require("../config");
 const httpStatusCode = require("../constants/http-status-code.json");
-const fetch = require("fetch");
+const fetch = require('node-fetch');
 const _ = require("lodash");
 const apiAdress = config.apiAdress;
 
@@ -71,28 +71,35 @@ module.exports.find = async (req, res) => {
 module.exports.submit = async (req,res) => {
   const problemId = req.params._id;
   const player = req.player;
-  const {lang, code} = req.body;
-  const
+  const lang = req.body.lang;
+  const code = req.files.code;
   const body = JSON.stringify({script:code});
   const init = {
-    method = "POST",
-    body = body,
-    headers = {"Content-type": "application/json; charset=UTF-8"}
+    method : "POST",
+    body : body,
+    headers : {"Content-type": "text/plain","Language":lang}
   };
 
+  console.log(fetch)
   try{
-    const response = await fetch(apiAdress + `/problems/${problemId}`, init);
+    const adress = apiAdress + `/problems/${problemId}`;
+    const response = await fetch(adress, init);
 
     if (response.ok){
+      console.log("ok");
       const data = await response.json();
+      console.log(data);
       player.addSubmittedProblem(problemId, data.submission_id)
       res.status(httpStatusCode.OK).send(data);
 
     } else {
+      console.log("not ok")
       res.status(httpStatusCode.BAD_REQUEST);
     }
 
   } catch (error) {
+    console.log("error");
+    console.log(error);
     res.status(httpStatusCode.BAD_REQUEST).send({error});
   }
 };

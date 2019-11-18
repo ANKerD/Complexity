@@ -18,7 +18,7 @@ const SubmissionSchema = new Schema(
     },
     language: {
         type: String,
-        enum: ["PY", "C++"]
+        enum: ["python", "cplusplus"]
     }
   },
   {
@@ -31,7 +31,7 @@ SubmissionSchema.methods.show = async function() {
     problem = await Problem.findOne({_id:this.problem_id});
 
     return {
-        sid: this._id
+        sid: this._id,
         pid: this.problem_id,
         name: problem.title,
         state: this.state,

@@ -7,7 +7,7 @@ const config = {
     api_key: process.env.CLOUDINARY_APIKEY || '263833975991679',
     api_secret: process.env.CLOUDINARY_APISECRET || '9lFrHKDQcfL-eHdRj4bvjLmsz00',
   },
-  apiAdress = ""
+  apiAdress : "http://35.199.77.234:8080"
 }
 
 if (process.env.SUPPORTED_LANGS) {
