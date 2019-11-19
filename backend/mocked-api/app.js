@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -6,8 +8,6 @@ const util = require("util");
 const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
 
-const config = require("./config");
-
 const playerRoute = require("./routes/playerRoute");
 const problemRoute = require("./routes/problemRoute");
 const submissionsRoute = require("./routes/submission");
@@ -15,17 +15,7 @@ const blogRoute = require("./routes/blogRoute");
 const rankingRoute = require("./routes/rankingRoute");
 
 const app = express();
-const port = config.port;
-
-const username = "complexity",
-  password = "complexity123",
-  db_name = "complexity",
-  db_url = util.format(
-    "mongodb+srv://%s:%s@mycluster-7adlt.gcp.mongodb.net/%s?retryWrites=true&w=majority",
-    username,
-    password,
-    db_name
-  );
+const port = process.env.PORT;
 
 const options = {
   useNewUrlParser: true,
@@ -36,7 +26,7 @@ const options = {
 };
 
 try {
-  mongoose.connect(db_url, options);
+  mongoose.connect(process.env.MONGO_URL, options);
 } catch (error) {
   handleError(error);
 }
@@ -49,9 +39,9 @@ app.use(
   })
 );
 cloudinary.config({
-  cloud_name: config.cloudinary.cloud_name,
-  api_key: config.cloudinary.api_key,
-  api_secret: config.cloudinary.api_secret
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 app.use(cors());
