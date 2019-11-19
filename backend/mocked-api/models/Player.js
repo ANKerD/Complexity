@@ -77,7 +77,9 @@ PlayerSchema.methods.generateNewPassword = async function() {
 PlayerSchema.methods.generateAuthToken = async function() {
   // Generate an auth token for the player
   const player = this;
-  const token = jwt.sign({ _id: player._id }, process.env.JWT_SECRET);
+  const token = jwt.sign({ _id: player._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d"
+  });
   player.tokens = player.tokens.concat({ token });
   await player.save();
   return token;

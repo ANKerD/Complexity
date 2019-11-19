@@ -38,6 +38,7 @@ app.use(
     tempFileDir: "/tmp/"
   })
 );
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -45,8 +46,8 @@ cloudinary.config({
 });
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(bodyParser.json({ limit: "10mb", extended: true }));
 
 app.use("/player", playerRoute());
 app.use("/problem", problemRoute());
@@ -58,6 +59,12 @@ app.get("/", (req, res) => {
   res.send("TODO: swagger docs");
 });
 
+app.all("*", (err, req, res, next) =>
+  res
+    .status(500)
+    .send(e)
+    .end()
+);
 app.all("*", (req, res) => res.status(404).send({ message: "Not Found" }));
 
 app.listen(port, () => {

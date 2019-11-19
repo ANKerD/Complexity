@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Player = require("../models/Player");
 
-const auth2 = async (req, res, next) => {
+const softAuth = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     const data = jwt.verify(token, process.env.JWT_SECRET);
@@ -13,7 +13,7 @@ const auth2 = async (req, res, next) => {
     req.token = token;
     next();
   } catch (err) {
-    next();
+    next(err);
   }
 };
-module.exports = auth2;
+module.exports = softAuth;
