@@ -1,10 +1,8 @@
 const Problem = require("../models/Problem");
 const Submission = require("../models/Submission");
-const config = require("../config");
 const httpStatusCode = require("../constants/http-status-code.json");
 const fetch = require('node-fetch');
 const _ = require("lodash");
-const apiAddress = config.apiAdress;
 const FormData = require('form-data');
 const fs = require('fs');
 
@@ -79,7 +77,7 @@ module.exports.submit = async (req,res) => {
   const player = req.player;
   const lang = req.header('Language')
   console.log(lang);
-  const address = apiAddress + `/problems/${problemId}`;
+  const address = process.env.JUDGE_API_ADDRESS + `/problems/${problemId}`;
 
   var form = new FormData();
   console.log(req.files.script.tempFilePath)

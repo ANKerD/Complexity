@@ -1,11 +1,9 @@
 const { Schema, model } = require('mongoose');
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
-const config = require('../config');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
-const apiAdress = config.apiAdress;
 
 const PlayerSchema = new Schema(
   {
@@ -69,7 +67,7 @@ const checkSubmission = async function(player, submissionId, ms) {
 
     try{
         console.log("Getting submission state...")
-        const response = await fetch(apiAdress + `/submissions/${submissionId}`, init);
+        const response = await fetch(process.env.JUDGE_API_ADDRESS + `/submissions/${submissionId}`, init);
         if (response.ok){
             const data = await response.json();
             console.log(data)

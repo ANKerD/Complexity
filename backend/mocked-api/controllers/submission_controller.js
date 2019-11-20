@@ -1,10 +1,8 @@
 const Problem = require("../models/Problem");
 const Submission = require("../models/Submission");
-const config = require("../config");
 const httpStatusCode = require("../constants/http-status-code.json");
 const _ = require("lodash");
 const fetch = require('node-fetch');
-const apiAdress = config.apiAdress;
 
 module.exports.checkSubmission = async (req,res) => {
   const submissionId = req.params._id;
@@ -13,7 +11,7 @@ module.exports.checkSubmission = async (req,res) => {
   };
 
   try{
-    const response = await fetch(apiAdress + `/submissions/${submissionId}`, init);
+    const response = await fetch(process.env.JUDGE_API_ADDRESS + `/submissions/${submissionId}`, init);
 
     if (response.ok){
       const data = await response.json();

@@ -17,7 +17,6 @@ const rankingRoute = require("./routes/rankingRoute");
 const app = express();
 const port = process.env.PORT;
 
-
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
