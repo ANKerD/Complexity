@@ -26,6 +26,7 @@ const username = "complexity",
     db_name
   );
 
+
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -58,8 +59,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/player", playerRoute());
-app.use("/problem", problemRoute());
-app.use("/submission", submissionsRoute());
+app.use("/problems", problemRoute());
+app.use("/submissions", submissionsRoute());
 app.use("/blog", blogRoute());
 
 app.get("/", (req, res) => {

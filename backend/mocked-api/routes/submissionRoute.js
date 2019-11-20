@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 const router = Router();
 
 const routes = () => {
-    router.get('/', auth, submissionController.checkSubmission);
+    router.get('/:_id', auth, submissionController.checkSubmission);
 
     return router;
 };

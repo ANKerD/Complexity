@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const apiAdress = config.apiAdress;
 
 module.exports.checkSubmission = async (req,res) => {
-  const {submissionId} = req.body;
+  const submissionId = req.params._id;
   const init = {
     method : "GET"
   };
