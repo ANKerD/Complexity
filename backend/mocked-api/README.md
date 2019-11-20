@@ -3,18 +3,29 @@
 ## Setup
 
 #### Pré-requisitos
+
 - Nodejs
 - Npm
 
 #### Rodando a aplicação
-1. ```npm install```
-2. ```npm run dev```
+
+1. `npm install`
+2. `npm run dev`
 
 ## Docs
 
+## Swagger
+
+Para editar a documentação, instale as dependências globalmente.
+
+1. `sudo npm install -g swagger swagger-editor`
+2. Digite `swagger project edit` para abrir o live editor.
+
+## (Documentação paliativa...)
+
 ### Player
 
-#### ``` POST /player/login ```
+#### `POST /player/login`
 
 ```js
 // request...
@@ -45,7 +56,8 @@
 ```
 
 Nota: O player acima já está cadastrado.
-#### ``` POST /player/signup ```
+
+#### `POST /player/signup`
 
 ```js
 // request...
@@ -63,7 +75,8 @@ Nota: O player acima já está cadastrado.
 ```
 
 Nota: O player acima já está cadastrado.
-#### ``` GET /player/{nick} ```
+
+#### `GET /player/{nick}`
 
 ```js
 // response...

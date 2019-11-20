@@ -8,6 +8,10 @@ const ProblemSchema = new Schema(
       unique: true
     },
     tags: [String],
+    xp: {
+      type: Number,
+      required: true
+    },
     level: {
       type: Number,
       min: 1,
@@ -41,6 +45,11 @@ const ProblemSchema = new Schema(
     collection: "Problems"
   }
 );
+
+ProblemSchema.methods.show = function() {
+  const {_id,title,tags,level,description,author,info,photo,samples,createdAt,updatedAt} = this;
+  return {_id,title,tags,level,description,author,info,photo,samples,createdAt,updatedAt};
+}
 
 const Problem = model("Problem", ProblemSchema);
 module.exports = Problem;
