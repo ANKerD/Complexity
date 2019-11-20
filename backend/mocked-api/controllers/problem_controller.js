@@ -4,7 +4,10 @@ const config = require("../config");
 const httpStatusCode = require("../constants/http-status-code.json");
 const fetch = require('node-fetch');
 const _ = require("lodash");
-const apiAdress = config.apiAdress;
+const apiAddress = config.apiAdress;
+const FormData = require('form-data');
+const fs = require('fs');
+const axios = require('axios')
 
 module.exports.register = async (req, res) => {
   try {
@@ -69,37 +72,22 @@ module.exports.find = async (req, res) => {
 };
 
 module.exports.submit = async (req,res) => {
+  // const player = req.player;
+  const lang = req.header('Language')
+  console.log(lang);
   const problemId = req.params._id;
-  const player = req.player;
-  const lang = req.body.lang;
-  const code = req.files.code;
-  const body = JSON.stringify({script:code});
-  const init = {
-    method : "POST",
-    body : body,
-    headers : {"Content-type": "text/plain","Language":lang}
-  };
+  const address = apiAddress + `/problems/${problemId}`;
 
-  console.log(fetch)
-  try{
-    const adress = apiAdress + `/problems/${problemId}`;
-    const response = await fetch(adress, init);
+  var form = new FormData();
 
-    if (response.ok){
-      console.log("ok");
-      const data = await response.json();
-      console.log(data);
-      player.addSubmittedProblem(problemId, data.submission_id)
-      res.status(httpStatusCode.OK).send(data);
-
-    } else {
-      console.log("not ok")
-      res.status(httpStatusCode.BAD_REQUEST);
-    }
-
-  } catch (error) {
-    console.log("error");
-    console.log(error);
-    res.status(httpStatusCode.BAD_REQUEST).send({error});
+  form.append('script', fs.createReadStream(req.files.script.tempFilePath));
+  const response = await fetch (address, { method: 'POST', body: form, headers: {"Language": "python"} })
+  if (response.ok){
+    const data = await response.json();
+    // player.addSubmittedProblem(problemId, data.submission_id)
+    // player.save();
+    res.status(httpStatusCode.OK).send(data);
+  } else {
+    res.status(httpStatusCode.BAD_REQUEST);
   }
 };

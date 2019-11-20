@@ -93,8 +93,8 @@ PlayerSchema.methods.addSolvedProblem = function(submissionId){
 }
 
 PlayerSchema.methods.addSubmittedProblem =  async function(submissionId) {
-    this.problemsSubmitted = [...new Set(this.problemsSubmitted.concat(submissionId))]
-    checkSubmission(submissionId, 500);
+    this.problemsSubmitted = [...new Set(this.problemsSubmitted.concat(submissionId))];
+    // checkSubmission(submissionId, 500);
 };
 
 PlayerSchema.pre('save', async function (next) {
