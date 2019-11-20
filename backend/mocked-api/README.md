@@ -3,18 +3,29 @@
 ## Setup
 
 #### Pré-requisitos
+
 - Nodejs
 - Npm
 
 #### Rodando a aplicação
-1. ```npm install```
-2. ```npm run dev```
+
+1. `npm install`
+2. `npm run dev`
 
 ## Docs
 
+## Swagger
+
+Para editar a documentação, instale as dependências globalmente.
+
+1. `sudo npm install -g swagger swagger-editor`
+2. Digite `swagger project edit` para abrir o live editor.
+
+## (Documentação paliativa...)
+
 ### Player
 
-#### ``` POST /player/login ```
+#### `POST /player/login`
 
 ```js
 // request...
@@ -22,8 +33,21 @@
 	"player": {
 		"nick": "hand",
 		"password": "spinner"
-	},
-	"expiration": 157 // segundos de validade pro token (não vai pra api final)
+	}
+}
+// response...
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Im5pY2siOiJoYW5kIn0sImlhdCI6MTU2NjUyMzkxOCwiZXhwIjoxNTY2NTI3NTE4fQ.sRwtfc-SNcUvb6mH4T3V9LXtGZlkwkFZRyC7GSRfCEc"
+}
+```
+
+```js
+// request...
+{
+	"player": {
+		"email": "hand@spinner.com.br",
+		"password": "spinner"
+	}
 }
 // response...
 {
@@ -32,13 +56,14 @@
 ```
 
 Nota: O player acima já está cadastrado.
-#### ``` POST /player/signup ```
+
+#### `POST /player/signup`
 
 ```js
 // request...
 {
 	"player": {
-		"nick": "feet",
+		"nick": "hand",
 		"password": "spinner",
 		"email": "hand@spinner.com"
 	}
@@ -49,4 +74,21 @@ Nota: O player acima já está cadastrado.
 }
 ```
 
-Importante: os dados são salvos em memória, então, depois que a aplicação for fechada, os dados criados serão perdidos.
+Nota: O player acima já está cadastrado.
+
+#### `GET /player/{nick}`
+
+```js
+// response...
+{
+    "profile": {
+        "nick": "hand",
+        "level": 0,
+        "problemsSubmitted": [],
+        "problemsSolved": [],
+        "submissions": 0,
+        "teams": [],
+        "contests": []
+    }
+}
+```
