@@ -10,7 +10,7 @@ const routes = () => {
     router.post('/', auth, problemController.register);
 
     router.get('/:_id', problemController.findById);
-    router.post('/:_id', problemController.submit);
+    router.post('/:_id', auth, problemController.submit);
 
     return router;
 }

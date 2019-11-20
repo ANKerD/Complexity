@@ -7,7 +7,6 @@ const _ = require("lodash");
 const apiAddress = config.apiAdress;
 const FormData = require('form-data');
 const fs = require('fs');
-const axios = require('axios')
 
 module.exports.register = async (req, res) => {
   try {
@@ -72,19 +71,21 @@ module.exports.find = async (req, res) => {
 };
 
 module.exports.submit = async (req,res) => {
-  // const player = req.player;
+  const problemId = req.params._id;
+  console.log("Submitting to problem [" + problemId + "]")
+  const player = req.player;
   const lang = req.header('Language')
   console.log(lang);
-  const problemId = req.params._id;
   const address = apiAddress + `/problems/${problemId}`;
 
   var form = new FormData();
-
+  console.log(req.files.script.tempFilePath)
   form.append('script', fs.createReadStream(req.files.script.tempFilePath));
   const response = await fetch (address, { method: 'POST', body: form, headers: {"Language": "python"} })
   if (response.ok){
     const data = await response.json();
-    // player.addSubmittedProblem(problemId, data.submission_id)
+    player.addSubmittedProblem(data.submission_id)
+    player.save()
     // player.save();
     res.status(httpStatusCode.OK).send(data);
   } else {

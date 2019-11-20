@@ -57,30 +57,31 @@ const PlayerSchema = new Schema({
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const checkSubmission = async function(submissionId, ms) {
-  const init = {
-    method : "GET"
-  };
+const checkSubmission = async function(player, submissionId, ms) {
+    const init = {
+        method : "GET"
+    };
 
-  try{
-    const response = await fetch(apiAdress + `/submissions/${submissionId}`, init);
+    try{
+        console.log("Getting submission state...")
+        const response = await fetch(apiAdress + `/submissions/${submissionId}`, init);
+        if (response.ok){
+            const data = await response.json();
+            console.log(data)
 
-    if (response.ok){
-      const data = await response.json();
+            if (data.state != "FAILED" && data.result === ""){
+                await wait(ms);
+                await checkSubmission(player, submissionId, ms);
+            }
 
-      if (data.result === ""){
-        await wait(ms);
-        await checkSubmission(submissionId, ms);
-      }
-
-      if (data.result === "AC") {
-        this.addSolvedProblem(submissionId);
-        this.save()
-      }
+            if (data.result === "AC") {
+                player.addSolvedProblem(submissionId);
+                player.save()
+            }
+        }
+    } catch (error) {
+        console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
 }
 
 const asyncMapShow = async function(list) {
@@ -88,13 +89,12 @@ const asyncMapShow = async function(list) {
 }
 
 PlayerSchema.methods.addSolvedProblem = function(submissionId){
-    uniqueProblemsSolved = [...new Set(this.problemsSolved.concat(submissionId))];
-    this.problemsSolved = uniqueProblemsSolved;
+    this.problemsSolved = this.problemsSolved.concat(submissionId);
 }
 
 PlayerSchema.methods.addSubmittedProblem =  async function(submissionId) {
-    this.problemsSubmitted = [...new Set(this.problemsSubmitted.concat(submissionId))];
-    // checkSubmission(submissionId, 500);
+    this.problemsSubmitted =this.problemsSubmitted.concat(submissionId);
+    checkSubmission(this, submissionId, 500);
 };
 
 PlayerSchema.pre('save', async function (next) {
