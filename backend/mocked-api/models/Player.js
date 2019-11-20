@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const { Schema, model } = require('mongoose');
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
@@ -7,13 +6,6 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
 const apiAdress = config.apiAdress;
-=======
-const { Schema, model } = require("mongoose");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
->>>>>>> origin/develop
 
 const PlayerSchema = new Schema(
   {
@@ -154,7 +146,6 @@ PlayerSchema.statics.findByEmailAndPassword = async (email, password) => {
 };
 
 PlayerSchema.statics.findByNickAndPassword = async (nick, password) => {
-<<<<<<< HEAD
     // Search for a player by nick and password.
     const player = await Player.findOne({ nick } ).select('+password');
     console.log(player);
@@ -186,19 +177,6 @@ PlayerSchema.methods.toProfile = function(){
         friends: this.friends
         }
     };
-=======
-  // Search for a player by nick and password.
-  const player = await Player.findOne({ nick }).select("+password");
-  console.log(player);
-  if (!player) {
-    throw new Error({ error: "Invalid login credentials" });
-  }
-  const isPasswordMatch = await bcrypt.compare(password, player.password);
-  if (!isPasswordMatch) {
-    throw new Error({ error: "Invalid login credentials" });
-  }
-  return player;
->>>>>>> origin/develop
 };
 
 PlayerSchema.methods.toProfile = function() {
