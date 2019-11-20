@@ -1,8 +1,11 @@
-const { Schema, model } = require("mongoose");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
+const { Schema, model } = require('mongoose');
+const validator = require('validator')
+const jwt = require('jsonwebtoken')
+const config = require('../config');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const fetch = require('node-fetch');
+const apiAdress = config.apiAdress;
 
 const PlayerSchema = new Schema(
   {
@@ -57,14 +60,57 @@ const PlayerSchema = new Schema(
   }
 );
 
-PlayerSchema.pre("save", async function(next) {
-  // Hash the password before saving the user model
-  const player = this;
-  if (player.isModified("password")) {
-    player.password = await bcrypt.hash(player.password, 8);
-  }
-  next();
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const checkSubmission = async function(player, submissionId, ms) {
+    const init = {
+        method : "GET"
+    };
+
+    try{
+        console.log("Getting submission state...")
+        const response = await fetch(apiAdress + `/submissions/${submissionId}`, init);
+        if (response.ok){
+            const data = await response.json();
+            console.log(data)
+
+            if (data.state != "FAILED" && data.result === ""){
+                await wait(ms);
+                await checkSubmission(player, submissionId, ms);
+            }
+
+            if (data.result === "AC") {
+                player.addSolvedProblem(submissionId);
+                player.save()
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const asyncMapShow = async function(list) {
+    return await Promise.all(list.map(async elem => {return elem.show()}))
+}
+
+PlayerSchema.methods.addSolvedProblem = function(submissionId){
+    this.problemsSolved = this.problemsSolved.concat(submissionId);
+}
+
+PlayerSchema.methods.addSubmittedProblem =  async function(submissionId) {
+    this.problemsSubmitted =this.problemsSubmitted.concat(submissionId);
+    checkSubmission(this, submissionId, 500);
+};
+
+PlayerSchema.pre('save', async function (next) {
+    // Hash the password before saving the user model
+    const player = this
+    if (player.isModified('password')) {
+        player.password = await bcrypt.hash(player.password, 8)
+    }
+    next()
 });
+
 
 PlayerSchema.methods.generateNewPassword = async function() {
   const player = this;
@@ -100,17 +146,37 @@ PlayerSchema.statics.findByEmailAndPassword = async (email, password) => {
 };
 
 PlayerSchema.statics.findByNickAndPassword = async (nick, password) => {
-  // Search for a player by nick and password.
-  const player = await Player.findOne({ nick }).select("+password");
-  console.log(player);
-  if (!player) {
-    throw new Error({ error: "Invalid login credentials" });
-  }
-  const isPasswordMatch = await bcrypt.compare(password, player.password);
-  if (!isPasswordMatch) {
-    throw new Error({ error: "Invalid login credentials" });
-  }
-  return player;
+    // Search for a player by nick and password.
+    const player = await Player.findOne({ nick } ).select('+password');
+    console.log(player);
+    if (!player) {
+        throw new Error({ error: 'Invalid login credentials' });
+    }
+    const isPasswordMatch = await bcrypt.compare(password, player.password);
+    if (!isPasswordMatch) {
+        throw new Error({ error: 'Invalid login credentials' });
+    }
+    return player;
+}
+
+PlayerSchema.methods.toProfile = function(){
+    return {
+      profile: {
+        name: this.name,
+        age: this.age,
+        nationality: this.nationality,
+        institution: this.institution,
+        photo: this.photo,
+        nick: this.nick,
+        level: this.level,
+        problemsSubmitted: asyncMapShow(this.problemsSubmitted),
+        problemsSolved: asyncMapShow(this.problemsSolved),
+        submissions: this.submissions,
+        teams: this.teams,
+        contests: this.contests,
+        friends: this.friends
+        }
+    };
 };
 
 PlayerSchema.methods.toProfile = function() {

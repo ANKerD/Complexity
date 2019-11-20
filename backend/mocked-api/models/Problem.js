@@ -25,6 +25,8 @@ const ProblemSchema = new Schema(
     author: String,
     info: String, // for misc informtion about the problem
     photo: String,
+    time_limit: Number,
+    memory_limit: Number,
     samples: [
       {
         input: { type: String, required: true },

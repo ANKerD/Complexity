@@ -10,12 +10,13 @@ const fileUpload = require("express-fileupload");
 
 const playerRoute = require("./routes/playerRoute");
 const problemRoute = require("./routes/problemRoute");
-const submissionsRoute = require("./routes/submission");
+const submissionsRoute = require("./routes/submissionRoute");
 const blogRoute = require("./routes/blogRoute");
 const rankingRoute = require("./routes/rankingRoute");
 
 const app = express();
 const port = process.env.PORT;
+
 
 const options = {
   useNewUrlParser: true,
@@ -50,8 +51,8 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json({ limit: "10mb", extended: true }));
 
 app.use("/player", playerRoute());
-app.use("/problem", problemRoute());
-app.use("/submission", submissionsRoute());
+app.use("/problems", problemRoute());
+app.use("/submissions", submissionsRoute());
 app.use("/blog", blogRoute());
 app.use("/ranking", rankingRoute());
 
